@@ -35,7 +35,7 @@ function Basics {
                          ca-certificates libgtk2.0-0 laptop-mode-tools \
                          autoconf autofs automake autossh axel bash-completion \
                          openssh-server sshfs evince gparted tree \
-                         xubuntu-icon-theme
+                         xubuntu-icon-theme pinta
 }
 
 function Python {
@@ -50,6 +50,12 @@ function Docker {
 
 function IDEs {
     apt -y install code sublime-text
+}
+
+
+function Slack {
+    wget -O slack.deb https://downloads.slack-edge.com/linux_releases/slack-desktop-3.3.3-amd64.deb
+    gdebi -n slack.deb
 }
 
 function MEGA {
@@ -80,4 +86,5 @@ MEGA
 Mendeley
 Latex
 Docker
+Slack
 Cleanup
