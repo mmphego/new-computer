@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Generally this script will install basic Ubuntu packages and extras,
+# latest Python pip and defined dependencies in pip-requirements.
+# Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley and Latex support
+
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
   exit
@@ -35,7 +39,7 @@ function Basics {
                          ca-certificates libgtk2.0-0 laptop-mode-tools \
                          autoconf autofs automake autossh axel bash-completion \
                          openssh-server sshfs evince gparted tree \
-                         xubuntu-icon-theme pinta
+                         xubuntu-icon-theme pinta shellcheck
 }
 
 function Python {
