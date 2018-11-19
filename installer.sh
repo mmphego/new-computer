@@ -42,7 +42,8 @@ function Basics {
                    ca-certificates libgtk2.0-0 laptop-mode-tools \
                    autoconf autofs automake autossh axel bash-completion \
                    openssh-server sshfs evince gparted tree \
-                   xubuntu-icon-theme pinta shellcheck wicd
+                   xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
+		   xfce4-* 
 }
 
 function Python {
