@@ -1,4 +1,1 @@
-youtube-dl
-ipython['all']
-numpy
-matplotlib
+pipenv
