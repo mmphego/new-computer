@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Generally this script will install basic Ubuntu packages and extras,
 # latest Python pip and defined dependencies in pip-requirements.
@@ -10,8 +10,11 @@ if [ "$EUID" -ne 0 ]
 fi
 
 set -e
+set -o xtrace
+DEBIAN_FRONTEND=noninteractive
 
-apt install -y wget curl
+apt-get update
+apt-get install -y wget curl
 
 function Repositories {
     Version=$(grep ^UBUNTU_CODENAME /etc/os-release | cut -d "=" -f2)
@@ -27,14 +30,14 @@ function Repositories {
     install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
-    apt update
+    apt-get update
 }
 
 function Basics {
-    apt install -y terminator
-    apt install -y dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
+    apt-get install -y terminator
+    apt-get install -y dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
                    gettext libz-dev libssl-dev
-    apt install -y build-essential zlib1g-dev build-essential \
+    apt-get install -y build-essential zlib1g-dev build-essential \
                    libssl-dev libreadline-dev libyaml-dev dselect \
                    libsqlite3-dev sqlite3 libxml2-dev htop \
                    libxslt1-dev libcurl4-openssl-dev libffi-dev vim \
@@ -43,7 +46,7 @@ function Basics {
                    autoconf autofs automake autossh axel bash-completion \
                    openssh-server sshfs evince gparted tree \
                    xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
-		   xfce4-* 
+		   xfce4-*
 }
 
 function Python {
@@ -80,7 +83,7 @@ function Mendeley {
 }
 
 function Latex {
-    apt install -y pandoc texlive-font-utils latexmk texlive-latex-extra gummi \
+    apt-get install -y pandoc texlive-font-utils latexmk texlive-latex-extra gummi \
                    texlive-pictures texlive-pstricks texlive-science texlive-xetex \
                    chktex
 }
@@ -88,7 +91,7 @@ function Latex {
 function Git {
 	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
 	gdebi -n libc.deb || true
-    apt install -y git
+    apt-get install -y git
 }
 
 function Cleanup {
