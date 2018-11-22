@@ -46,7 +46,7 @@ function Basics {
                    autoconf autofs automake autossh axel bash-completion \
                    openssh-server sshfs evince gparted tree \
                    xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
-		   xfce4-*
+		   gawk xfce4-*
 }
 
 function Python {
@@ -91,7 +91,8 @@ function Latex {
 function Git {
 	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
 	gdebi -n libc.deb || true
-    apt-get install -y git
+    apt-get ls
+    install -y git
 }
 
 function Cleanup {
