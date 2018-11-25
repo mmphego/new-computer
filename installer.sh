@@ -30,6 +30,8 @@ function Repositories {
     install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
+    add-apt-repository -yu ppa:maarten-baert/simplescreenrecorder
+    add-apt-repository -yu ppa:openshot.developers/ppa
     apt-get update
 }
 
@@ -46,7 +48,7 @@ function Basics {
                    autoconf autofs automake autossh axel bash-completion \
                    openssh-server sshfs evince gparted tree \
                    xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
-		   gawk xfce4-*
+		           gawk xfce4-* simplescreenrecorder openshot-qt
 }
 
 function Python {
