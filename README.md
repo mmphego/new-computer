@@ -1,4 +1,7 @@
 # xubuntu-pkg-installer
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/43713e0b78f547e8912ff05c9350cffb)](https://app.codacy.com/app/mmphego/xubuntu-pkg-installer?utm_source=github.com&utm_medium=referral&utm_content=mmphego/xubuntu-pkg-installer&utm_campaign=Badge_Grade_Dashboard)
+
 Bash script to install everything I need after a fresh Xubuntu system install.
 
 What is installed:
