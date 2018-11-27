@@ -95,6 +95,9 @@ function Git {
 	gdebi -n libc.deb || true
     apt-get ls
     install -y git
+    wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
+    prefix=/usr/local hub-linux-386-2.6.0/install
+    rm -rf hub-linux*
 }
 
 function Cleanup {
