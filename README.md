@@ -5,14 +5,14 @@
 Bash script to install everything I need after a fresh Xubuntu system install.
 
 What is installed:
-- Basics(git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
-- Python PIP
-- Docker
-- VScode and Sublime-Text
-- Gummi and Latex dependencies
-- Slack
-- Megasync
-- Mendeley
+-  Basics(git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
+-  Python PIP
+-  Docker
+-  VScode and Sublime-Text
+-  Gummi and Latex dependencies
+-  Slack
+-  Megasync
+-  Mendeley
 
 ## Usage
 
@@ -21,6 +21,7 @@ sudo ./installer.sh
 ```
 
 ### How to backup and restore settings and list of installed packages
+
 **Backup**
 
 ```sh
@@ -30,6 +31,7 @@ sudo cp -R /etc/apt/sources.list* ~/Backup/
 sudo apt-key exportall > ~/Backup/Repo.keys
 rsync --progress /home/`whoami` /path/to/user/profile/backup/here
 ```
+
 **Restore**
 
 ```sh
@@ -46,6 +48,5 @@ sudo dselect
 ```
 
 [Source](http://askubuntu.com/a/99151).
-
 
 **I'm sure there's a better way of doing things, but I prefer using a Hammer and Hammering everything**
