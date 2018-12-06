@@ -38,7 +38,7 @@ function Repositories {
 function Basics {
     apt-get install -y terminator
     apt-get install -y dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
-                       gettext libz-dev libssl-dev || true;
+                       gettext libz-dev libssl-dev
     apt-get install -y build-essential zlib1g-dev build-essential \
                        libssl-dev libreadline-dev libyaml-dev dselect \
                        libsqlite3-dev sqlite3 libxml2-dev htop \
@@ -50,7 +50,6 @@ function Basics {
                        xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
     	                 gawk xfce4-* cowsay fortune-mod chromium-browser \
                        # simplescreenrecorder openshot-qt \
-                       || true;
 }
 
 function Python {
