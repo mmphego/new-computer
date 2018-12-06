@@ -30,26 +30,27 @@ function Repositories {
     install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
-    add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
-    add-apt-repository -y ppa:openshot.developers/ppa
+    # add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
+    # add-apt-repository -y ppa:openshot.developers/ppa
     apt-get update
 }
 
 function Basics {
     apt-get install -y terminator
     apt-get install -y dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
-                   gettext libz-dev libssl-dev
+                       gettext libz-dev libssl-dev || true;
     apt-get install -y build-essential zlib1g-dev build-essential \
-                   libssl-dev libreadline-dev libyaml-dev dselect \
-                   libsqlite3-dev sqlite3 libxml2-dev htop \
-                   libxslt1-dev libcurl4-openssl-dev libffi-dev vim \
-                   software-properties-common apt-transport-https \
-                   ca-certificates libgtk2.0-0 laptop-mode-tools \
-                   autoconf autofs automake autossh axel bash-completion \
-                   openssh-server sshfs evince gparted tree \
-                   xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
-	           gawk xfce4-* simplescreenrecorder openshot-qt cowsay fortune-mod \
-		   chromium-browser
+                       libssl-dev libreadline-dev libyaml-dev dselect \
+                       libsqlite3-dev sqlite3 libxml2-dev htop \
+                       libxslt1-dev libcurl4-openssl-dev libffi-dev vim \
+                       software-properties-common apt-transport-https \
+                       ca-certificates libgtk2.0-0 laptop-mode-tools \
+                       autoconf autofs automake autossh axel bash-completion \
+                       openssh-server sshfs evince gparted tree \
+                       xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
+    	                 gawk xfce4-* cowsay fortune-mod chromium-browser \
+                       # simplescreenrecorder openshot-qt \
+                       || true;
 }
 
 function Python {
