@@ -1,1 +1,4 @@
-pipenv
+ipython['all']
+virtualenv
+numpy 
+matplotlib
