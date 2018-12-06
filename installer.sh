@@ -32,6 +32,7 @@ function Repositories {
 
     # add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
     # add-apt-repository -y ppa:openshot.developers/ppa
+    cat  /etc/apt/sources.list
     apt-get update
 }
 
