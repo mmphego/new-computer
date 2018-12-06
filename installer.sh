@@ -18,20 +18,20 @@ apt-get install -y wget curl gdebi
 
 function Repositories {
     Version=$(grep ^UBUNTU_CODENAME /etc/os-release | cut -d "=" -f2)
-    add-apt-repository -yu ppa:git-core/ppa
+    add-apt-repository -y ppa:git-core/ppa
 
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
     echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    add-apt-repository -yu "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
+    add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
 
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
     install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
-    add-apt-repository -yu ppa:maarten-baert/simplescreenrecorder
-    add-apt-repository -yu ppa:openshot.developers/ppa
+    add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
+    add-apt-repository -y ppa:openshot.developers/ppa
     apt-get update
 }
 
