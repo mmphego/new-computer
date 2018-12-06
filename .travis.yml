@@ -1,0 +1,9 @@
+language: python
+dist: xenial
+sudo: required
+
+python:
+  - "2.7"
+
+script:
+  - cd xubuntu-pkg-installer && bash installer.sh
