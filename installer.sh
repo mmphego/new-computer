@@ -14,7 +14,7 @@ set -o xtrace
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
-apt-get install -y wget curl
+apt-get install -y wget curl gdebi
 
 function Repositories {
     Version=$(grep ^UBUNTU_CODENAME /etc/os-release | cut -d "=" -f2)
@@ -48,7 +48,8 @@ function Basics {
                    autoconf autofs automake autossh axel bash-completion \
                    openssh-server sshfs evince gparted tree \
                    xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
-		           gawk xfce4-* simplescreenrecorder openshot-qt
+	           gawk xfce4-* simplescreenrecorder openshot-qt cowsay fortune-mod \
+		   chromium-browser
 }
 
 function Python {
@@ -93,8 +94,7 @@ function Latex {
 function Git {
 	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
 	gdebi -n libc.deb || true
-    apt-get ls
-    install -y git
+    apt-get install -y git
     wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
     prefix=/usr/local hub-linux-386-2.6.0/install
     rm -rf hub-linux*
