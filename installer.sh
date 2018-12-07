@@ -94,7 +94,7 @@ function Latex {
 }
 
 function Git {
-	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.20-0ubuntu1_amd64.deb
+	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
 	gdebi -n libc.deb || true
   apt-get install -y git
   wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
