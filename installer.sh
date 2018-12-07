@@ -62,8 +62,8 @@ function Python {
 
 function Docker {
     apt -y install docker-ce
-    gpasswd -a ${USER} docker
-    usermod -a -G docker ${USER}
+    gpasswd -a  "$(users)" docker
+    usermod -a -G docker "$(users)"
 }
 
 function IDEs {
@@ -103,7 +103,7 @@ function Git {
 }
 
 function Cleanup {
-    apt clean && rm -rf *.deb *.gpg *.py*
+    apt clean && rm -rf -- *.deb* *.gpg* *.py*
 }
 
 
