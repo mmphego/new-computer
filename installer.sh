@@ -17,14 +17,15 @@ apt-get update
 apt-get install -y wget curl gdebi
 
 function Repositories {
-    Version=$(grep ^UBUNTU_CODENAME /etc/os-release | cut -d "=" -f2)
+    Version=$(lsb_release -cs)
     add-apt-repository -y ppa:git-core/ppa
 
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
     echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
+    [ -z "${Version}" ] || add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
+
 
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
     install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
