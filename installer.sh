@@ -57,7 +57,7 @@ function Basics {
 function Python {
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
     apt -y install python-dev python-tk
-    pip install -r pip-requirements.txt
+    pip install --ignore-installed -U -r pip-requirements.txt
 }
 
 function Docker {
@@ -94,12 +94,12 @@ function Latex {
 }
 
 function Git {
-	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
+	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.20-0ubuntu1_amd64.deb
 	gdebi -n libc.deb || true
-    apt-get install -y git
-    wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
-    prefix=/usr/local hub-linux-386-2.6.0/install
-    rm -rf hub-linux*
+  apt-get install -y git
+  wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
+  prefix=/usr/local hub-linux-386-2.6.0/install
+  rm -rf hub-linux*
 }
 
 function Cleanup {
