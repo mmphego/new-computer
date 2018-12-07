@@ -1,4 +1,4 @@
-ipython['all']
+ipython["all"]
 virtualenv
-numpy 
+numpy
 matplotlib
