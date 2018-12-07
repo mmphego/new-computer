@@ -14,53 +14,55 @@ set -o xtrace
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
-apt-get install -y wget curl
+apt-get install -y wget curl gdebi
 
 function Repositories {
-    Version=$(grep ^UBUNTU_CODENAME /etc/os-release | cut -d "=" -f2)
-    add-apt-repository -yu ppa:git-core/ppa
+    Version=$(lsb_release -cs)
+    add-apt-repository -y ppa:git-core/ppa
 
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
     echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    add-apt-repository -yu "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
+    [ -z "${Version}" ] || add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
+
 
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
     install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
-    add-apt-repository -yu ppa:maarten-baert/simplescreenrecorder
-    add-apt-repository -yu ppa:openshot.developers/ppa
+    add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
+    add-apt-repository -y ppa:openshot.developers/ppa
     apt-get update
 }
 
 function Basics {
     apt-get install -y terminator
     apt-get install -y dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
-                   gettext libz-dev libssl-dev
+                       gettext libz-dev libssl-dev
     apt-get install -y build-essential zlib1g-dev build-essential \
-                   libssl-dev libreadline-dev libyaml-dev dselect \
-                   libsqlite3-dev sqlite3 libxml2-dev htop \
-                   libxslt1-dev libcurl4-openssl-dev libffi-dev vim \
-                   software-properties-common apt-transport-https \
-                   ca-certificates libgtk2.0-0 laptop-mode-tools \
-                   autoconf autofs automake autossh axel bash-completion \
-                   openssh-server sshfs evince gparted tree \
-                   xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
-		           gawk xfce4-* simplescreenrecorder openshot-qt
+                       libssl-dev libreadline-dev libyaml-dev dselect \
+                       libsqlite3-dev sqlite3 libxml2-dev htop \
+                       libxslt1-dev libcurl4-openssl-dev libffi-dev vim \
+                       software-properties-common apt-transport-https \
+                       ca-certificates libgtk2.0-0 laptop-mode-tools \
+                       autoconf autofs automake autossh axel bash-completion \
+                       openssh-server sshfs evince gparted tree \
+                       xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
+    	                 gawk xfce4-* cowsay fortune-mod chromium-browser \
+                       simplescreenrecorder openshot-qt \
 }
 
 function Python {
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
     apt -y install python-dev python-tk
-    pip install -r pip-requirements.txt
+    pip install --ignore-installed -U -r pip-requirements.txt
 }
 
 function Docker {
     apt -y install docker-ce
-    gpasswd -a ${USER} docker
-    usermod -a -G docker ${USER}
+    gpasswd -a  "$(users)" docker
+    usermod -a -G docker "$(users)"
 }
 
 function IDEs {
@@ -93,15 +95,14 @@ function Latex {
 function Git {
 	wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
 	gdebi -n libc.deb || true
-    apt-get ls
-    install -y git
-    wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
-    prefix=/usr/local hub-linux-386-2.6.0/install
-    rm -rf hub-linux*
+  apt-get install -y git
+  wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
+  prefix=/usr/local hub-linux-386-2.6.0/install
+  rm -rf hub-linux*
 }
 
 function Cleanup {
-    apt clean && rm -rf *.deb *.gpg *.py*
+    apt clean && rm -rf -- *.deb* *.gpg* *.py*
 }
 
 
