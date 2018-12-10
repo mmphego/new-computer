@@ -9,8 +9,9 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-set -e
+set -ex
 set -o xtrace
+
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
@@ -38,8 +39,10 @@ function Repositories {
 
 function Basics {
     apt-get install -y terminator
+
     apt-get install -y dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
                        gettext libz-dev libssl-dev
+
     apt-get install -y build-essential zlib1g-dev build-essential \
                        libssl-dev libreadline-dev libyaml-dev dselect \
                        libsqlite3-dev sqlite3 libxml2-dev htop \
@@ -49,7 +52,7 @@ function Basics {
                        autoconf autofs automake autossh axel bash-completion \
                        openssh-server sshfs evince gparted tree \
                        xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
-    	                 gawk xfce4-* cowsay fortune-mod chromium-browser \
+    	               gawk xfce4-* cowsay fortune-mod chromium-browser vlc \
                        # simplescreenrecorder openshot-qt \
 }
 
