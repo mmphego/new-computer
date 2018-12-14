@@ -10,7 +10,6 @@ if [ "$EUID" -ne 0 ]
 fi
 
 set -ex
-set -o xtrace
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -53,6 +52,7 @@ function Basics {
                        openssh-server sshfs evince gparted tree \
                        xubuntu-icon-theme pinta shellcheck wicd gnome-calculator \
     	               gawk xfce4-* cowsay fortune-mod chromium-browser vlc \
+                       youtube-dl rar
                        # simplescreenrecorder openshot-qt \
 }
 
