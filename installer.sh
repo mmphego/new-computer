@@ -89,6 +89,7 @@ cecho "${green}" "Installing wget curl and gdebi as requirements!"
 InstallThis wget curl gdebi
 
 function ReposInstaller {
+    cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
     add-apt-repository -y ppa:git-core/ppa
 
