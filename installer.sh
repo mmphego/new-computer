@@ -197,7 +197,6 @@ function PackagesInstaller {
     MEGAInstaller
 
     ### Chat / Video Conference
-    InstallThis slack-desktop
     SlackInstaller
 
     ### Music, Pictures and Video
