@@ -5,7 +5,7 @@
 # Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley, Latex support and etc
 # Some configs reused from: https://github.com/nnja/new-computer
 
-set -ex
+set -e
 
 echo "Xubuntu Install Setup Script"
 echo "Note: You need to be sudo before you continue"
