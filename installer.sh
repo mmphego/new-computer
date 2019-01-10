@@ -2,7 +2,7 @@
 
 # Generally this script will install basic Ubuntu packages and extras,
 # latest Python pip and defined dependencies in pip-requirements.
-# Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley and Latex support
+# Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley, Latex support and etc
 # Some configs reused from: https://github.com/nnja/new-computer
 
 set -ex
@@ -38,20 +38,20 @@ echon() {
 
 
 echon
-cecho $red "###############################################"
-cecho $red "#        DO NOT RUN THIS SCRIPT BLINDLY       #"
-cecho $red "#         YOU'LL PROBABLY REGRET IT...        #"
-cecho $red "#                                             #"
-cecho $red "#              READ IT THOROUGHLY             #"
-cecho $red "#         AND EDIT TO SUIT YOUR NEEDS         #"
-cecho $red "###############################################"
+cecho "${red}" "###############################################"
+cecho "${red}" "#        DO NOT RUN THIS SCRIPT BLINDLY       #"
+cecho "${red}" "#         YOU'LL PROBABLY REGRET IT...        #"
+cecho "${red}" "#                                             #"
+cecho "${red}" "#              READ IT THOROUGHLY             #"
+cecho "${red}" "#         AND EDIT TO SUIT YOUR NEEDS         #"
+cecho "${red}" "###############################################"
 echon
 
 # Set continue to false by default.
 CONTINUE=false
 
-cecho $red "Have you read through the script you're about to run and "
-cecho $red "understood that it will make changes to your computer? (y/n)"
+cecho "${red}" "Have you read through the script you're about to run and "
+cecho "${red}" "understood that it will make changes to your computer? (y/n)"
 
 # read -r response
 # if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
@@ -66,7 +66,7 @@ if ! "${CONTINUE}"; then
 fi
 
 if [ "${EUID}" -ne 0 ]
-  then cecho $red "Please run script as root!!!"
+  then cecho "${red}" "Please run script as root!!!"
   exit
 fi
 
@@ -80,9 +80,9 @@ function InstallThis {
     done
 }
 
-echo "Running package updates..."
+cecho "${green}" "Running package updates..."
 apt-get update
-echo "Installing wget curl and gdebi as requirements!"
+cecho "${green}" "Installing wget curl and gdebi as requirements!"
 InstallThis wget curl gdebi
 
 function ReposInstaller {
@@ -218,3 +218,32 @@ ReposInstaller
 PackagesInstaller
 ### Minor Clean-up
 Cleanup
+
+cecho "${cyan}" "Done!"
+
+#############################################
+### Install dotfiles repo, run link script
+#############################################
+# TODO:
+# clean up my personal repo to make it public
+# dotfiles for vs code, emacs, gitconfig, oh my zsh, etc.
+# git clone git@github.com:nnja/dotfiles.git
+# cd dotfiles
+# fetch submodules for oh-my-zsh
+# git submodule init && git submodule update && git submodule status
+# make symbolic links and change shell to zshell
+# ./makesymlinks.sh
+# upgrade_oh_my_zsh
+
+
+cecho "${white}" "################################################################################"
+echon
+cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
+echon
+echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
+read response
+if [ "$response" != "${response#[Yy]}" ] ;then
+    apt-get -y --allow-unauthenticated upgrade && \
+    apt-get autoclean && \
+    apt-get autoremove
+fi
