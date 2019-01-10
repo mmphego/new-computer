@@ -1,4 +1,8 @@
+flake8
 ipython
-virtualenv
-numpy
 matplotlib
+numpy
+pip
+pylint
+virtualenv
+wheel
