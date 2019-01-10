@@ -1,9 +1,8 @@
-# xubuntu-pkg-installer
-
+# New Computer
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/43713e0b78f547e8912ff05c9350cffb)](https://app.codacy.com/app/mmphego/xubuntu-pkg-installer?utm_source=github.com&utm_medium=referral&utm_content=mmphego/xubuntu-pkg-installer&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/mmphego/xubuntu-pkg-installer.svg?branch=master)](https://travis-ci.com/mmphego/xubuntu-pkg-installer)
 
-Bash script to install everything I need after a fresh Xubuntu system install.
+Bash script to install everything I need after a fresh [X]Ubuntu system install.
 
 What is installed:
 -  Basics(git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
@@ -14,6 +13,7 @@ What is installed:
 -  Slack
 -  Megasync
 -  Mendeley
+-  etc
 
 ## Usage
 
