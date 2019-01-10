@@ -21,7 +21,7 @@ magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
 white=$(tput setaf 7)
 # Resets the style
-reset=`tput sgr0`
+reset=$(tput sgr0)
 
 # Color-echo.
 # arg $1 = Color
@@ -52,10 +52,14 @@ CONTINUE=false
 
 cecho "${red}" "Have you read through the script you're about to run and "
 cecho "${red}" "understood that it will make changes to your computer? (y/n)"
-
-read -t 10 -r response
-if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-  CONTINUE=true
+if ! "${TRAVIS}"; then
+    cecho "${yellow}" "Running Continuous Integration."
+    read -t 10 -r response
+    if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      CONTINUE=true
+    fi
+else
+    CONTINUE=true
 fi
 
 if ! "${CONTINUE}"; then
@@ -74,7 +78,7 @@ fi
 ############################################
 
 function InstallThis {
-    for pkg in $@; do
+    for pkg in "$@"; do
         apt-get install -y "${pkg}";
     done
 }
@@ -239,10 +243,13 @@ cecho "${white}" "##############################################################
 echon
 cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
 echon
-echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
-read -t 10 response
-if [ "$response" != "${response#[Yy]}" ] ;then
-    apt-get -y --allow-unauthenticated upgrade && \
-    apt-get autoclean && \
-    apt-get autoremove
+if ! "${TRAVIS}"; then
+    cecho "${yellow}" "Running Continuous Integration."
+    echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
+    read -t 10 -r response
+    if [ "$response" != "${response#[Yy]}" ] ;then
+        apt-get -y --allow-unauthenticated upgrade && \
+        apt-get autoclean && \
+        apt-get autoremove
+    fi
 fi
