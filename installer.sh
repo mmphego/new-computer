@@ -53,11 +53,10 @@ CONTINUE=false
 cecho "${red}" "Have you read through the script you're about to run and "
 cecho "${red}" "understood that it will make changes to your computer? (y/n)"
 
-# read -r response
-# if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-#   CONTINUE=true
-# fi
-CONTINUE=true
+read -t 10 -r response
+if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+  CONTINUE=true
+fi
 
 if ! "${CONTINUE}"; then
   # Check if we're continuing and output a message if not
@@ -241,7 +240,7 @@ echon
 cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
 echon
 echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
-read response
+read -t 10 response
 if [ "$response" != "${response#[Yy]}" ] ;then
     apt-get -y --allow-unauthenticated upgrade && \
     apt-get autoclean && \
