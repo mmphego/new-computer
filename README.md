@@ -18,7 +18,7 @@ What is installed:
 ## Usage
 
 ```bash
-sudo ./installer.sh
+sudo bash -c "`curl -L https://raw.githubusercontent.com/mmphego/xubuntu-pkg-installer/master/installer.sh`"
 ```
 
 ### How to backup and restore settings and list of installed packages
