@@ -53,12 +53,12 @@ CONTINUE=false
 cecho "${red}" "Have you read through the script you're about to run and "
 cecho "${red}" "understood that it will make changes to your computer? (y/n)"
 if ! "${TRAVIS}"; then
-    cecho "${yellow}" "Running Continuous Integration."
     read -t 10 -r response
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       CONTINUE=true
     fi
 else
+    cecho "${yellow}" "Running Continuous Integration."
     CONTINUE=true
 fi
 
