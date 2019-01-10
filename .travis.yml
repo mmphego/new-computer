@@ -1,12 +1,15 @@
 sudo: required
 
+git:
+  depth: 3
+
 language: bash
 
 before_install:
   - sudo apt-get install -y shellcheck
 
-after_install:
-  - shellcheck installer.sh
-
 script:
   - sudo bash installer.sh
+
+after_script:
+  - shellcheck installer.sh
