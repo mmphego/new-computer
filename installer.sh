@@ -224,6 +224,24 @@ function GitSetUp {
     fi
 }
 
+
+function installDotfiles {
+    #############################################
+    ### Install dotfiles repo
+    #############################################
+    cecho "${red}" "Do you want to clone and install dotfiles? (y/n)"
+    if ! "${TRAVIS}"; then
+        read -t 10 -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            cd ~/
+            git init -q
+            cecho "${cyan}" "Cloning (Overwriting) dot-files into ~/ "
+            git remote add -f -m origin git@github.com:mmphego/dot-files.git
+            git pull -f || true
+        fi
+    fi
+}
+
 ##########################################
 ###### Simplified Package Installer ######
 ##########################################
@@ -259,7 +277,7 @@ function PackagesInstaller {
 
     ### Network tools
     InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
-        gnome-calculator speedtest-cli
+        gnome-calculator
 
     ### Fun tools
     InstallThis cowsay fortune-mod
@@ -291,34 +309,20 @@ function Cleanup {
     apt clean && rm -rf -- *.deb* *.gpg* *.py*
 }
 
+########################################
+########### THE SETUP ##################
+########################################
 ReposInstaller
 PackagesInstaller
-### Minor Clean-up
 Cleanup
+installDotfiles
 
 cecho "${cyan}" "Done!"
-
-#############################################
-### Install dotfiles repo
-#############################################
-cecho "${red}" "Do you want to clone and install dotfiles? (y/n)"
-if ! "${TRAVIS}"; then
-    read -t 10 -r response
-    if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        cd ~/
-        git init -q
-        cecho "${cyan}" "Cloning (Overwriting) dot-files into ~/ "
-        git remote add -f -m origin git@github.com:mmphego/dot-files.git
-        git pull -f || true
-    fi
-fi
-
 cecho "${white}" "################################################################################"
 echon
 cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
 echon
 if ! "${TRAVIS}"; then
-    cecho "${yellow}" "Running Continuous Integration."
     echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
     read -t 10 -r response
     if [ "$response" != "${response#[Yy]}" ] ;then
