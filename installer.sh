@@ -49,9 +49,9 @@ echon
 # Set continue to false by default.
 CONTINUE=false
 
-cecho "${red}" "Have you read through the script you're about to run and "
-cecho "${red}" "understood that it will make changes to your computer? (y/n)"
 if ! "${TRAVIS}"; then
+    cecho "${red}" "Have you read through the script you're about to run and "
+    cecho "${red}" "understood that it will make changes to your computer? (y/n)"
     read -t 10 -r response
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       CONTINUE=true
@@ -64,8 +64,13 @@ fi
 if ! "${CONTINUE}"; then
   # Check if we're continuing and output a message if not
   cecho "${red}" "Please go read the script, it only takes a few minutes"
-  exit
+  exit 1
 fi
+
+# Here we go.. ask for the administrator password upfront and run a
+# keep-alive to update existing `sudo` time stamp until script has finished
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 ############################################
 # Prerequisite: Update package source list #
@@ -78,24 +83,24 @@ function InstallThis {
 }
 
 cecho "${green}" "Running package updates..."
-sudo apt-get update
+sudo apt-get update -qq
 cecho "${green}" "Installing wget curl and gdebi as requirements!"
 InstallThis wget curl gdebi
 
 function ReposInstaller {
     cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
-    add-apt-repository -y ppa:git-core/ppa
+    sudo add-apt-repository -y ppa:git-core/ppa
 
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
     echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    [ -z "${Version}" ] || add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
+    [ -z "${Version}" ] || sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
 
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
     sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-    sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+    sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
     sudo add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
     sudo add-apt-repository -y ppa:openshot.developers/ppa
@@ -128,17 +133,25 @@ function MendeleyInstaller {
 }
 
 function LatexInstaller {
-    InstallThis pandoc texlive-font-utils latexmk texlive-latex-extra gummi \
-                   texlive-pictures texlive-pstricks texlive-science texlive-xetex \
-                   chktex
+    InstallThis chktex \
+        latexmk \
+        pandoc \
+        texlive-font-utils \
+        texlive-latex-extra \
+        gummi \
+        texlive-pictures \
+        texlive-pstricks \
+        texlive-science \
+        texlive-xetex
 }
 
 function GitInstaller {
+    cecho "${cyan}" "Installing Git..."
     wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
     sudo gdebi -n libc.deb || true
     InstallThis git
     wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
-    prefix=/usr/local hub-linux-386-2.6.0/install
+    sudo prefix=/usr/local hub-linux-386-2.6.0/install
     rm -rf hub-linux*
 }
 
@@ -153,15 +166,12 @@ function DockerSetUp {
 
 function VSCodeSetUp {
     cecho "${cyan}" "Installing VSCode plugins..."
-    for User in $(who | awk '{print $1}' | sort --unique); do
-        while read -r pkg; do
-            code --user-data-dir "/home/$User" --install-extension "${pkg}";
-        done < code_plugins.txt
-    done
+    while read -r pkg; do
+        code --install-extension "${pkg}";
+    done < code_plugins.txt
 }
 
 function GitSetUp {
-    cecho "${cyan}" "Setting up Git..."
 
     if ! "${TRAVIS}"; then
         #############################################
@@ -169,6 +179,7 @@ function GitSetUp {
         ### See: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
         #############################################
 
+        cecho "${cyan}" "Setting up Git..."
         echo "Generating ssh keys, adding to ssh-agent..."
         read -t 10 -r -p 'Input your full name: ' username
         git config --global user.name "${username}"
@@ -198,15 +209,15 @@ function GitSetUp {
         read -t 10 -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             retries=3
-            while read -r key; do SSHKEY="${key}"; done < ~/.ssh/id_rsa.pub
+           while read -r key; do SSH_KEY="${key}"; done < ~/.ssh/id_rsa.pub
             for ((i=0; i<retries; i++)); do
                   read -r -p 'GitHub username: ' ghusername
                   read -r -p 'Machine name: ' ghtitle
-                  read -sp 'GitHub personal token: ' ghtoken
+                  read -r -sp 'GitHub personal token: ' ghtoken
 
-                  gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "${ghusername}:${ghtoken}" -d '{"title":"'${ghtitle}'","key":"'"${SSH_KEY}"'"}' 'https://api.github.com/user/keys')
+                  gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "${ghusername}:${ghtoken}" -d '{"title":"'"${ghtitle}"'","key":"'"${SSH_KEY}"'"}' 'https://api.github.com/user/keys')
 
-                  if (( $gh_status_code -eq == 201)); then
+                  if (( "${gh_status_code}" == 201)); then
                       cecho "${cyan}" "GitHub ssh key added successfully!"
                       break
                   else
@@ -216,8 +227,6 @@ function GitSetUp {
             done
             [[ "${retries}" -eq i ]] && cecho "${red}" "Adding ssh-key to GitHub failed! Try again later."
         fi
-    else
-        cecho "${yellow}" "Running Continuous Integration."
     fi
 }
 
@@ -295,9 +304,11 @@ function PackagesInstaller {
     InstallThis vlc youtube-dl simplescreenrecorder openshot-qt pinta
 
     ### System and Security tools
-    InstallThis ca-certificates build-essential software-properties-common apt-transport-https \
+    InstallThis ca-certificates build-essential \
+        software-properties-common apt-transport-https \
         laptop-mode-tools xubuntu-icon-theme xfce4-*
 
+    ### Academic tools
     MendeleyInstaller
     LatexInstaller
 }

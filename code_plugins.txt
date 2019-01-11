@@ -35,7 +35,6 @@ tht13.python
 timonwong.shellcheck
 torn4dom4n.latex-support
 Tyriar.sort-lines
-viktors.vscode-latex-utilities
 VisualStudioExptTeam.vscodeintellicode
 wholroyd.jinja
 yzane.markdown-pdf
