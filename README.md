@@ -1,53 +1,25 @@
-# New Computer
+# Simple Bash script for setting up a new Computer (running [X]Ubuntu)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/43713e0b78f547e8912ff05c9350cffb)](https://app.codacy.com/app/mmphego/xubuntu-pkg-installer?utm_source=github.com&utm_medium=referral&utm_content=mmphego/xubuntu-pkg-installer&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/mmphego/new-computer.svg?branch=master)](https://travis-ci.com/mmphego/new-computer)
 
-Bash script to install everything I need after a fresh [X]Ubuntu system install.
+My personal system set-up script which installs most of the packages I need on a daily basis after a fresh [X]Ubuntu system install.
 
 What is installed:
 -  Basics(git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
--  Python PIP
--  Docker
--  VScode and Sublime-Text
--  Gummi and Latex dependencies
--  Slack
--  Megasync
--  Mendeley
--  etc
+-  Python-pip and [few modules](pip-requirements.txt)
+-  [Docker](https://www.docker.com/)
+-  [VSCode](https://code.visualstudio.com) and [Sublime-Text](www.sublimetext.com/3)
+-  [Slack](https://slack.com)
+-  [Megasync](https://mega.nz)
+-  [Gummi](https://github.com/alexandervdm/gummis) and Latex dependencies
+-  [Mendeley](https://www.mendeley.com), and etc
 
-## Usage
+## Install from script
 
 ```bash
-bash -c "`curl -L https://raw.githubusercontent.com/mmphego/xubuntu-pkg-installer/master/installer.sh`"
+bash -c "`curl -L https://raw.githubusercontent.com/mmphego/new-computer/master/installer.sh`"
 ```
 
-### How to backup and restore settings and list of installed packages
+### Feedback
 
-**Backup**
-
-```sh
-mkdir Backup
-dpkg --get-selections > ~/Backup/Package.list
-sudo cp -R /etc/apt/sources.list* ~/Backup/
-sudo apt-key exportall > ~/Backup/Repo.keys
-rsync --progress /home/`whoami` /path/to/user/profile/backup/here
-```
-
-**Restore**
-
-```sh
-rsync --progress /path/to/user/profile/backup/here /home/`whoami`
-sudo apt-key add ~/Backup/Repo.keys
-
-# if you are updating you OS, don't forget to update your source.list
-# Hint: $ lsb_release -c # to get the codename
-sudo cp -R ~/Backup/sources.list* /etc/apt/
-sudo apt-get update
-sudo apt-get install dselect
-sudo dpkg --set-selections < ~/Backup/Package.list
-sudo dselect
-```
-
-[Source](http://askubuntu.com/a/99151).
-
-**I'm sure there's a better way of doing things, but I prefer using a Hammer and Hammering everything**
+Feel free to fork it or send me PR to improve it.
