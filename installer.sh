@@ -143,7 +143,7 @@ function GitInstaller {
     sudo gdebi -n libc.deb || true
     InstallThis git
     wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
-    prefix=/usr/local hub-linux-386-2.6.0/install
+    sudo prefix=/usr/local hub-linux-386-2.6.0/install
     rm -rf hub-linux*
 }
 
