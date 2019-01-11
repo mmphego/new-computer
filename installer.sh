@@ -208,7 +208,7 @@ function GitSetUp {
         read -t 10 -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             retries=3
-           '" whie read"'-r key; do SSH_KEY="${key}"; done < ~/.ssh/id_rsa.pub
+           while read -r key; do SSH_KEY="${key}"; done < ~/.ssh/id_rsa.pub
             for ((i=0; i<retries; i++)); do
                   read -r -p 'GitHub username: ' ghusername
                   read -r -p 'Machine name: ' ghtitle
