@@ -219,8 +219,6 @@ function GitSetUp {
             done
             [[ "${retries}" -eq i ]] && cecho "${red}" "Adding ssh-key to GitHub failed! Try again later."
         fi
-    else
-        cecho "${yellow}" "Running Continuous Integration."
     fi
 }
 
