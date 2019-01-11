@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get install -y shellcheck
 
 script:
-  - sudo bash installer.sh
+  - bash installer.sh
 
 after_script:
   - shellcheck installer.sh

@@ -67,23 +67,18 @@ if ! "${CONTINUE}"; then
   exit
 fi
 
-if [ "${EUID}" -ne 0 ]
-  then cecho "${red}" "Please run script as root!!!"
-  exit
-fi
-
 ############################################
 # Prerequisite: Update package source list #
 ############################################
 
 function InstallThis {
     for pkg in "$@"; do
-        apt-get install -y "${pkg}";
+        sudo apt-get install -y "${pkg}";
     done
 }
 
 cecho "${green}" "Running package updates..."
-apt-get update
+sudo apt-get update
 cecho "${green}" "Installing wget curl and gdebi as requirements!"
 InstallThis wget curl gdebi
 
@@ -99,37 +94,37 @@ function ReposInstaller {
     [ -z "${Version}" ] || add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
 
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-    install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+    sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
-    add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
-    add-apt-repository -y ppa:openshot.developers/ppa
-    apt-get update
+    sudo add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
+    sudo add-apt-repository -y ppa:openshot.developers/ppa
+    sudo apt-get update
 }
 
 ## Install few global Python packages
 function PythonInstaller {
     cecho "${cyan}" "Installing global Python packages..."
+    sudo apt-get -y install python-dev python-tk
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
-    apt-get -y install python-dev python-tk
-    pip install --ignore-installed -U -r pip-requirements.txt
+    pip install --user --ignore-installed -U -r pip-requirements.txt
 }
 
 function SlackInstaller {
     cecho "${cyan}" "Installing Slack..."
     wget -O slack.deb https://downloads.slack-edge.com/linux_releases/slack-desktop-3.3.3-amd64.deb
-    gdebi -n slack.deb
+    sudo gdebi -n slack.deb
 }
 
 function MEGAInstaller {
     ID=$(grep ^VERSION_ID /etc/os-release | cut -d "=" -f2 | tr -d '"')
     wget "https://mega.nz/linux/MEGAsync/xUbuntu_${ID}/amd64/megasync-xUbuntu_${ID}_amd64.deb"
-    gdebi -n "megasync-xUbuntu_${ID}_amd64.deb"
+    sudo gdebi -n "megasync-xUbuntu_${ID}_amd64.deb"
 }
 
 function MendeleyInstaller {
     wget -O mendeley.deb https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
-    gdebi -n mendeley.deb
+    sudo gdebi -n mendeley.deb
 }
 
 function LatexInstaller {
@@ -140,7 +135,7 @@ function LatexInstaller {
 
 function GitInstaller {
     wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
-    gdebi -n libc.deb || true
+    sudo gdebi -n libc.deb || true
     InstallThis git
     wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
     prefix=/usr/local hub-linux-386-2.6.0/install
@@ -152,8 +147,8 @@ function GitInstaller {
 ##########################################
 function DockerSetUp {
     cecho "${cyan}" "Setting up Docker..."
-    gpasswd -a  "$(users)" docker
-    usermod -a -G docker "$(users)"
+    sudo gpasswd -a  "$(users)" docker
+    sudo usermod -a -G docker "$(users)"
 }
 
 function VSCodeSetUp {
@@ -308,7 +303,7 @@ function PackagesInstaller {
 }
 
 function Cleanup {
-    apt clean && rm -rf -- *.deb* *.gpg* *.py*
+    sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
 }
 
 ########################################
@@ -328,8 +323,8 @@ if ! "${TRAVIS}"; then
     echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
     read -t 10 -r response
     if [ "$response" != "${response#[Yy]}" ] ;then
-        apt-get -y --allow-unauthenticated upgrade && \
-        apt-get autoclean && \
-        apt-get autoremove
+        sudo apt-get -y --allow-unauthenticated upgrade && \
+        sudo apt-get autoclean && \
+        sudo apt-get autoremove
     fi
 fi
