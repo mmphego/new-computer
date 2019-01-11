@@ -217,7 +217,7 @@ function GitSetUp {
 
                   gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "${ghusername}:${ghtoken}" -d '{"title":"'"${ghtitle}"'","key":"'"${SSH_KEY}"'"}' 'https://api.github.com/user/keys')
 
-                  if (( "${gh_status_code}" -eq == 201)); then
+                  if (( "${gh_status_code}" == 201)); then
                       cecho "${cyan}" "GitHub ssh key added successfully!"
                       break
                   else
