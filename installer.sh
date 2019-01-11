@@ -49,9 +49,9 @@ echon
 # Set continue to false by default.
 CONTINUE=false
 
-cecho "${red}" "Have you read through the script you're about to run and "
-cecho "${red}" "understood that it will make changes to your computer? (y/n)"
 if ! "${TRAVIS}"; then
+    cecho "${red}" "Have you read through the script you're about to run and "
+    cecho "${red}" "understood that it will make changes to your computer? (y/n)"
     read -t 10 -r response
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       CONTINUE=true
@@ -64,8 +64,13 @@ fi
 if ! "${CONTINUE}"; then
   # Check if we're continuing and output a message if not
   cecho "${red}" "Please go read the script, it only takes a few minutes"
-  exit
+  exit 1
 fi
+
+# Here we go.. ask for the administrator password upfront and run a
+# keep-alive to update existing `sudo` time stamp until script has finished
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 ############################################
 # Prerequisite: Update package source list #
@@ -78,7 +83,7 @@ function InstallThis {
 }
 
 cecho "${green}" "Running package updates..."
-sudo apt-get update
+sudo apt-get update -qq
 cecho "${green}" "Installing wget curl and gdebi as requirements!"
 InstallThis wget curl gdebi
 
