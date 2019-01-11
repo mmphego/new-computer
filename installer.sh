@@ -146,6 +146,7 @@ function LatexInstaller {
 }
 
 function GitInstaller {
+    cecho "${cyan}" "Installing Git..."
     wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
     sudo gdebi -n libc.deb || true
     InstallThis git
