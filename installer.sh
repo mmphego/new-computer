@@ -107,20 +107,12 @@ function ReposInstaller {
     apt-get update
 }
 
-#############################################
-### Install few global python packages
-#############################################
+## Install few global Python packages
 function PythonInstaller {
     cecho "${cyan}" "Installing global Python packages..."
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
     apt-get -y install python-dev python-tk
     pip install --ignore-installed -U -r pip-requirements.txt
-}
-
-function DockerSetUp {
-    cecho "${cyan}" "Setting up Docker..."
-    gpasswd -a  "$(users)" docker
-    usermod -a -G docker "$(users)"
 }
 
 function SlackInstaller {
@@ -155,6 +147,86 @@ function GitInstaller {
     rm -rf hub-linux*
 }
 
+##########################################
+############# Package Set Up #############
+##########################################
+function DockerSetUp {
+    cecho "${cyan}" "Setting up Docker..."
+    gpasswd -a  "$(users)" docker
+    usermod -a -G docker "$(users)"
+}
+
+function VSCodeSetUp {
+    cecho "${cyan}" "Installing VSCode plugins..."
+    while read -r pkg; do
+        code --install-extension "${pkg}";
+    done < code_plugins.txt
+}
+
+function GitSetUp {
+    cecho "${cyan}" "Setting up Git..."
+
+    if ! "${TRAVIS}"; then
+        #############################################
+        ### Generate ssh keys & add to ssh-agent
+        ### See: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
+        #############################################
+
+        echo "Generating ssh keys, adding to ssh-agent..."
+        read -t 10 -r -p 'Input your full name: ' username
+        git config --global user.name "${username}"
+        read -t 10 -r -p 'Input email for ssh key: ' useremail
+        git config --global user.email "${useremail}"
+        git config --global push.default simple
+
+        echo "Use default ssh file location, enter a passphrase: "
+        ssh-keygen -t rsa -b 4096 -C "${useremail}"  # will prompt for password
+        eval "$(ssh-agent -s)"
+
+        # Now that sshconfig is synced add key to ssh-agent and
+        # store passphrase in keychain
+        ssh-add -K ~/.ssh/id_rsa
+
+        #############################################
+        ### Add ssh-key to GitHub via api
+        #############################################
+
+        cecho "${green}" "Adding ssh-key to GitHub (via api)..."
+        cecho "${red}" "Important! For this step, use a github personal token with the admin:public_key permission."
+        cecho "${red}" "If you don't have one, create it here: https://github.com/settings/tokens/new"
+        echon
+        cecho "${red}" "Now, have you read through the script you're about to run and "
+        cecho "${red}" "understood that it will make changes to your computer?"
+        cecho "${red}" "If you would like to continue press: y else n"
+        read -t 10 -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            retries=3
+            while read -r key; do SSHKEY="${key}"; done < ~/.ssh/id_rsa.pub
+            for ((i=0; i<retries; i++)); do
+                  read -r -p 'GitHub username: ' ghusername
+                  read -r -p 'Machine name: ' ghtitle
+                  read -sp 'GitHub personal token: ' ghtoken
+
+                  gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "${ghusername}:${ghtoken}" -d '{"title":"'${ghtitle}'","key":"'"${SSH_KEY}"'"}' 'https://api.github.com/user/keys')
+
+                  if (( $gh_status_code -eq == 201)); then
+                      cecho "${cyan}" "GitHub ssh key added successfully!"
+                      break
+                  else
+                        echo "Something went wrong. Enter your credentials and try again..."
+                        echo -n "Status code returned: ${gh_status_code}"
+                  fi
+            done
+            [[ "${retries}" -eq i ]] && cecho "${red}" "Adding ssh-key to GitHub failed! Try again later."
+        fi
+    else
+        cecho "${yellow}" "Running Continuous Integration."
+    fi
+}
+
+##########################################
+###### Simplified Package Installer ######
+##########################################
 function PackagesInstaller {
 
     ### Productivity tools
@@ -168,10 +240,11 @@ function PackagesInstaller {
         axel \
         docker-ce \
 
-    ### Docker Setup
-    DockerSetUp
-
     GitInstaller
+
+    ### Setup
+    DockerSetUp
+    GitSetUp
 
     # Python Packages
     PythonInstaller
@@ -186,13 +259,16 @@ function PackagesInstaller {
 
     ### Network tools
     InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
-        gnome-calculator
+        gnome-calculator speedtest-cli
 
     ### Fun tools
     InstallThis cowsay fortune-mod
 
     ### Dev Editors and tools
     InstallThis code
+    if [ -f "code_plugins.txt" ]; then
+        VSCodeSetUp;
+    fi
     InstallThis sublime-text
     InstallThis shellcheck
     MEGAInstaller
@@ -223,10 +299,19 @@ Cleanup
 cecho "${cyan}" "Done!"
 
 #############################################
-### Install dotfiles repo, run link script
+### Install dotfiles repo
 #############################################
-# TODO:
-# clean up my personal repo to make it public
+cecho "${red}" "Do you want to clone and install dotfiles? (y/n)"
+if ! "${TRAVIS}"; then
+    read -t 10 -r response
+    if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        cd ~/
+        git init -q
+        cecho "${cyan}" "Cloning (Overwriting) dot-files into ~/ "
+        git remote add -f -m origin git@github.com:mmphego/dot-files.git
+        git pull -f || true
+    fi
+fi
 
 cecho "${white}" "################################################################################"
 echon
