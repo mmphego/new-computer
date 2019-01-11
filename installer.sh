@@ -133,9 +133,16 @@ function MendeleyInstaller {
 }
 
 function LatexInstaller {
-    InstallThis pandoc texlive-font-utils latexmk texlive-latex-extra gummi \
-                   texlive-pictures texlive-pstricks texlive-science texlive-xetex \
-                   chktex
+    InstallThis chktex \
+        latexmk \
+        pandoc \
+        texlive-font-utils \
+        texlive-latex-extra \
+        gummi \
+        texlive-pictures \
+        texlive-pstricks \
+        texlive-science \
+        texlive-xetex
 }
 
 function GitInstaller {
@@ -296,9 +303,11 @@ function PackagesInstaller {
     InstallThis vlc youtube-dl simplescreenrecorder openshot-qt pinta
 
     ### System and Security tools
-    InstallThis ca-certificates build-essential software-properties-common apt-transport-https \
+    InstallThis ca-certificates build-essential \
+        software-properties-common apt-transport-https \
         laptop-mode-tools xubuntu-icon-theme xfce4-*
 
+    ### Academic tools
     MendeleyInstaller
     LatexInstaller
 }
