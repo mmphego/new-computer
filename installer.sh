@@ -171,7 +171,6 @@ function VSCodeSetUp {
 }
 
 function GitSetUp {
-    cecho "${cyan}" "Setting up Git..."
 
     if ! "${TRAVIS}"; then
         #############################################
@@ -179,6 +178,7 @@ function GitSetUp {
         ### See: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
         #############################################
 
+        cecho "${cyan}" "Setting up Git..."
         echo "Generating ssh keys, adding to ssh-agent..."
         read -t 10 -r -p 'Input your full name: ' username
         git config --global user.name "${username}"
