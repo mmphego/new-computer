@@ -158,9 +158,11 @@ function DockerSetUp {
 
 function VSCodeSetUp {
     cecho "${cyan}" "Installing VSCode plugins..."
-    while read -r pkg; do
-        code --install-extension "${pkg}";
-    done < code_plugins.txt
+    for User in $(who | awk '{print $1}' | sort --unique); do
+        while read -r pkg; do
+            code --user-data-dir "/home/$User" --install-extension "${pkg}";
+        done < code_plugins.txt
+    done
 }
 
 function GitSetUp {
