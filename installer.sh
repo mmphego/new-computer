@@ -208,15 +208,15 @@ function GitSetUp {
         read -t 10 -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             retries=3
-            while read -r key; do SSHKEY="${key}"; done < ~/.ssh/id_rsa.pub
+           '" whie read"'-r key; do SSH_KEY="${key}"; done < ~/.ssh/id_rsa.pub
             for ((i=0; i<retries; i++)); do
                   read -r -p 'GitHub username: ' ghusername
                   read -r -p 'Machine name: ' ghtitle
-                  read -sp 'GitHub personal token: ' ghtoken
+                  read -r -sp 'GitHub personal token: ' ghtoken
 
-                  gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "${ghusername}:${ghtoken}" -d '{"title":"'${ghtitle}'","key":"'"${SSH_KEY}"'"}' 'https://api.github.com/user/keys')
+                  gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "${ghusername}:${ghtoken}" -d '{"title":"'"${ghtitle}"'","key":"'"${SSH_KEY}"'"}' 'https://api.github.com/user/keys')
 
-                  if (( $gh_status_code -eq == 201)); then
+                  if (( "${gh_status_code}" -eq == 201)); then
                       cecho "${cyan}" "GitHub ssh key added successfully!"
                       break
                   else
