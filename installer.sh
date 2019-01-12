@@ -90,21 +90,33 @@ InstallThis wget curl gdebi
 function ReposInstaller {
     cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
+
+    ## Git
     sudo add-apt-repository -y ppa:git-core/ppa
 
+    ## Sublime Text
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
     echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 
+    ## Docker
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     [ -z "${Version}" ] || sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
 
+    ## VSCode
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
     sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
     sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
+    ## Atom
+    sudo add-apt-repository -y ppa:webupd8team/atom
+
+    ## Video tools
     sudo add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
     sudo add-apt-repository -y ppa:openshot.developers/ppa
     sudo apt-get update
+
+    ## Laptop battery management
+    sudo add-apt-repository -y ppa:linuxuprising/apps
 }
 
 ## Install few global Python packages
@@ -130,6 +142,12 @@ function MEGAInstaller {
 function MendeleyInstaller {
     wget -O mendeley.deb https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
     sudo gdebi -n mendeley.deb
+}
+
+function AtomInstaller {
+    # Atom text editor
+    wget -O atom.deb https://atom.io/download/deb
+    sudo gdebi -n atom.deb
 }
 
 function LatexInstaller {
@@ -283,7 +301,7 @@ function PackagesInstaller {
 
     ### Network tools
     InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
-        gnome-calculator
+        gnome-calculator ethtool
 
     ### Fun tools
     InstallThis cowsay fortune-mod
@@ -294,7 +312,12 @@ function PackagesInstaller {
         VSCodeSetUp;
     fi
     InstallThis sublime-text
+    AtomInstaller
+
+    ## Linters
     InstallThis shellcheck
+
+    ## Cloud
     MEGAInstaller
 
     ### Chat / Video Conference
@@ -306,7 +329,7 @@ function PackagesInstaller {
     ### System and Security tools
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
-        laptop-mode-tools xubuntu-icon-theme xfce4-*
+        laptop-mode-tools tlp tlpui xubuntu-icon-theme xfce4-*
 
     ### Academic tools
     MendeleyInstaller
