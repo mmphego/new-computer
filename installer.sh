@@ -190,6 +190,15 @@ function VSCodeSetUp {
     done < code_plugins.txt
 }
 
+function ArduinoUDevFixes {
+    cecho "${cyna}" "Setting up UDev rules for platformio"
+    cecho "${red}" "See: https://docs.platformio.org/en/latest/faq.html#id15"
+    curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+    sudo service udev restart
+    sudo usermod -a -G dialout "${USER}"
+    sudo usermod -a -G plugdev "${USER}"
+}
+
 function GitSetUp {
 
     if ! "${TRAVIS}"; then
@@ -298,7 +307,7 @@ function PackagesInstaller {
         libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
 
     ### Compilers and GNU dependencies
-    InstallThis g++ gettext dh-autoreconf autoconf automake
+    InstallThis g++ gettext dh-autoreconf autoconf automake clang
 
     ### Network tools
     InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
@@ -314,6 +323,9 @@ function PackagesInstaller {
     fi
     InstallThis sublime-text
     AtomInstaller
+    if command -v platformio >/dev/null ;then
+        ArduinoUDevFixes;
+    fi
 
     ## Linters
     InstallThis shellcheck
