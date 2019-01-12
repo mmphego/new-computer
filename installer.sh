@@ -151,6 +151,10 @@ function AtomInstaller {
     sudo gdebi -n atom.deb
 }
 
+function xUbuntuPackages {
+    InstallThis xubuntu-icon-theme xfce4-*
+}
+
 function LatexInstaller {
     InstallThis chktex \
         latexmk \
@@ -342,7 +346,10 @@ function PackagesInstaller {
     ### System and Security tools
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
-        tlp tlpui xubuntu-icon-theme xfce4-*
+        tlp tlpui
+
+    # Packages for xUbuntu
+    xUbuntuPackages
 
     ### Academic tools
     MendeleyInstaller
