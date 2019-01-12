@@ -117,6 +117,7 @@ function ReposInstaller {
 
     ## Laptop battery management
     sudo add-apt-repository -y ppa:linuxuprising/apps
+    sudo add-apt-repository -y ppa:linrunner/tlp
 }
 
 ## Install few global Python packages
@@ -329,7 +330,7 @@ function PackagesInstaller {
     ### System and Security tools
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
-        laptop-mode-tools tlp tlpui xubuntu-icon-theme xfce4-*
+        tlp tlpui xubuntu-icon-theme xfce4-*
 
     ### Academic tools
     MendeleyInstaller
