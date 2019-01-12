@@ -78,7 +78,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 function InstallThis {
     for pkg in "$@"; do
-        sudo apt-get install -y "${pkg}";
+        sudo apt-get install -y "${pkg}" || true;
     done
 }
 
