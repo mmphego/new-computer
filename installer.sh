@@ -311,7 +311,7 @@ function PackagesInstaller {
         libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
 
     ### Compilers and GNU dependencies
-    InstallThis g++ gettext dh-autoreconf autoconf automake clang
+    InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
 
     ### Network tools
     InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
