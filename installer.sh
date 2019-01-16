@@ -5,7 +5,13 @@
 # Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley, Latex support and etc
 # Some configs reused from: https://github.com/nnja/new-computer
 
-set -e
+set -e pipefail
+
+# Check if the script is running under Ubuntu 18.04 Bionic Beaver
+if [ $(lsb_release -c -s) != "bionic" ]; then
+    >&2 echo "This script is made for Ubuntu 18.04!"
+    exit 1
+fi
 
 # Set the colours you can use
 # black=$(tput setaf 0)
