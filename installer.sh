@@ -7,9 +7,9 @@
 
 set -e pipefail
 
-# Check if the script is running under Ubuntu 18.04 Bionic Beaver
-if [ $(lsb_release -c -s) != "bionic" ]; then
-    >&2 echo "This script is made for Ubuntu 18.04!"
+# Check if the script is running under Ubuntu 16.04 or Ubuntu 18.04
+if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ]; then
+    >&2 echo "This script is made for Ubuntu 18.04 or Ubuntu 16.04!"
     exit 1
 fi
 
@@ -201,7 +201,7 @@ function VSCodeSetUp {
 }
 
 function ArduinoUDevFixes {
-    cecho "${cyna}" "Setting up UDev rules for platformio"
+    cecho "${cyan}" "Setting up UDev rules for platformio"
     cecho "${red}" "See: https://docs.platformio.org/en/latest/faq.html#id15"
     curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
     sudo service udev restart
