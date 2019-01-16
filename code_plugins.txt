@@ -17,6 +17,7 @@ formulahendry.docker-explorer
 formulahendry.docker-extension-pack
 formulahendry.terminal
 goessner.mdmath
+github.vscode-pull-request-github
 hars.CppSnippets
 James-Yu.latex-workshop
 lextudio.restructuredtext
