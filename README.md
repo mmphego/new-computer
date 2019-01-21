@@ -4,7 +4,7 @@
 
 My personal system set-up script which installs most of the packages I need on a daily basis after a fresh [X]Ubuntu system install.
 
-What is installed:
+What is installed?
 -  Basics(git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
 -  Python-pip and [few modules](pip-requirements.txt)
 -  [Docker](https://www.docker.com/)
@@ -17,7 +17,7 @@ What is installed:
 ## Install from script
 
 ```bash
-bash -c "`curl -L https://raw.githubusercontent.com/mmphego/new-computer/master/installer.sh`"
+bash -c "`curl -L https://git.io/runme`"
 ```
 
 ### Feedback
