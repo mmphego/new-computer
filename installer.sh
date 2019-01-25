@@ -301,6 +301,7 @@ function PackagesInstaller {
         sqlite3 \
         axel \
         docker-ce \
+        colordiff
 
     GitInstaller
 
