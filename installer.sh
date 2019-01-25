@@ -176,8 +176,8 @@ function LatexInstaller {
 
 function GitInstaller {
     cecho "${cyan}" "Installing Git..."
-    wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
-    sudo gdebi -n libc.deb || true
+    # wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
+    # sudo gdebi -n libc.deb || true
     InstallThis git
     wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
     sudo prefix=/usr/local hub-linux-386-2.6.0/install
