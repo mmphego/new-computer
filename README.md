@@ -2,7 +2,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/43713e0b78f547e8912ff05c9350cffb)](https://app.codacy.com/app/mmphego/xubuntu-pkg-installer?utm_source=github.com&utm_medium=referral&utm_content=mmphego/xubuntu-pkg-installer&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/mmphego/new-computer.svg?branch=master)](https://travis-ci.com/mmphego/new-computer)
 
-My personal system set-up script which installs most of the packages I need on a daily basis after a fresh [X]Ubuntu system install.
+My personal system set-up script which installs most of the packages I need on a daily basis after a fresh [X]Ubuntu system install. Added [support for tweaking Dell XPS 15](http://github.com/mmphego/dell-xps-9570-ubuntu-respin/)
 
 What is installed?
 -  Basics(git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
