@@ -3,7 +3,8 @@
 # Generally this script will install basic Ubuntu packages and extras,
 # latest Python pip and defined dependencies in pip-requirements.
 # Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley, Latex support and etc
-# Some configs reused from: https://github.com/nnja/new-computer
+# Some configs reused from: https://github.com/nnja/new-computer and,
+# https://github.com/JackHack96/dell-xps-9570-ubuntu-respin
 
 set -e pipefail
 
@@ -189,6 +190,36 @@ function TravisClientInstaller {
     sudo gem install -n /usr/local/bin travis --no-rdoc --no-ri
 }
 
+function DELL_XPS_TWEAKS {
+    echon
+    cecho "${red}" "############################################################"
+    cecho "${red}" "#                                                          #"
+    cecho "${red}" "#   A collection of scripts and tweaks to make             #"
+    cecho "${red}" "#   Ubuntu 18.04 run smooth on Dell XPS 15 9570            #"
+    cecho "${red}" "#                                                          #"
+    cecho "${red}" "#            DO NOT RUN THIS SCRIPT BLINDLY                #"
+    cecho "${red}" "#               YOU'LL PROBABLY REGRET IT...               #"
+    cecho "${red}" "#                                                          #"
+    cecho "${red}" "#               READ IT THOROUGHLY                         #"
+    cecho "${red}" "#           AND EDIT TO SUIT YOUR NEEDS                    #"
+    cecho "${red}" "#               GO VIEW THE SCRIPT HERE!                   #"
+    cecho "${red}" "#                                                          #"
+    cecho "${red}" "#   https://github.com/mmphego/dell-xps-9570-ubuntu-respin #"
+    cecho "${red}" "#                                                          #"
+    cecho "${red}" "############################################################"
+
+    echon
+    if ! "${TRAVIS}"; then
+        cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
+        echo -n "Do you want to proceed with tweaking your Dell XPS? (y/n):-> "
+        read -t 10 -r response
+        if [ "$response" != "${response#[Yy]}" ] ;then
+            bash -c "$(curl -fsSL https://raw.githubusercontent.com/mmphego/dell-xps-9570-ubuntu-respin/master/xps-tweaks.sh)"
+        fi
+    fi
+
+}
+
 ##########################################
 ############# Package Set Up #############
 ##########################################
@@ -371,6 +402,17 @@ function PackagesInstaller {
 }
 
 function Cleanup {
+    cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
+    echon
+    if ! "${TRAVIS}"; then
+        echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
+        read -t 10 -r response
+        if [ "$response" != "${response#[Yy]}" ] ;then
+            sudo apt-get -y --allow-unauthenticated upgrade && \
+            sudo apt-get autoclean && \
+            sudo apt-get autoremove
+        fi
+    fi
     sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
 }
 
@@ -381,18 +423,10 @@ ReposInstaller
 PackagesInstaller
 Cleanup
 installDotfiles
-
-cecho "${cyan}" "Done!"
-cecho "${white}" "################################################################################"
-echon
-cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
-echon
-if ! "${TRAVIS}"; then
-    echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
-    read -t 10 -r response
-    if [ "$response" != "${response#[Yy]}" ] ;then
-        sudo apt-get -y --allow-unauthenticated upgrade && \
-        sudo apt-get autoclean && \
-        sudo apt-get autoremove
-    fi
+if [[ $(sudo lshw | grep product | head -1) == *"XPS"* ]]; then
+    DELL_XPS_TWEAKS
 fi
+
+cecho "${white}" "################################################################################"
+cecho "${cyan}" "Done!"
+cecho "${cyan}" "Please Reboot system!"
