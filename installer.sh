@@ -327,7 +327,31 @@ function installDotfiles {
 ##########################################
 function PackagesInstaller {
 
+    ### Compilers and GNU dependencies
+    InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
+
+    ### Library dependencies
+    InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
+        libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
+        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
+
+    ### System and Security tools
+    InstallThis ca-certificates build-essential \
+        software-properties-common apt-transport-https \
+        tlp tlpui
+
+    ### Network tools
+    InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
+        gnome-calculator ethtool
+
+    ### Fun tools
+    InstallThis cowsay fortune-mod
+
+    # Packages for xUbuntu
+    xUbuntuPackages
+
     ### Productivity tools
+    GitInstaller
     InstallThis terminator \
         htop \
         vim \
@@ -338,30 +362,10 @@ function PackagesInstaller {
         axel \
         docker-ce \
         colordiff
-
-    GitInstaller
-
-    ### Setup
-    DockerSetUp
-    GitSetUp
+    TravisClientInstaller
 
     # Python Packages
     PythonInstaller
-
-    ### Library dependencies
-    InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
-        libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
-        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
-
-    ### Compilers and GNU dependencies
-    InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
-
-    ### Network tools
-    InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
-        gnome-calculator ethtool
-
-    ### Fun tools
-    InstallThis cowsay fortune-mod
 
     ### Dev Editors and tools
     InstallThis code
@@ -386,17 +390,15 @@ function PackagesInstaller {
     ### Music, Pictures and Video
     InstallThis vlc youtube-dl simplescreenrecorder openshot-qt pinta
 
-    ### System and Security tools
-    InstallThis ca-certificates build-essential \
-        software-properties-common apt-transport-https \
-        tlp tlpui
-
-    # Packages for xUbuntu
-    xUbuntuPackages
-
     ### Academic tools
     MendeleyInstaller
     LatexInstaller
+
+    ####################
+    ### Setup
+    ####################
+    DockerSetUp
+    GitSetUp
 }
 
 function Cleanup {
