@@ -14,8 +14,6 @@ if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ];
     exit 1
 fi
 
-# Un-attended install
-export DEBIAN_FRONTEND=noninteractive
 
 # Set the colours you can use
 # black=$(tput setaf 0)
@@ -33,6 +31,11 @@ reset=$(tput sgr0)
 # arg $1 = Color
 # arg $2 = message
 cecho() {
+  echo "${1}${2}${reset}"
+  return
+}
+
+cechon() {
   echo "${1}${2}${reset}"
   return
 }
@@ -59,19 +62,22 @@ echon
 # Set continue to false by default.
 CONTINUE=false
 
-if ! "${TRAVIS}"; then
-    cecho "${red}" "Have you read through the script you're about to run and "
-    cecho "${red}" "understood that it will make changes to your computer? (y/n)"
+if [[ -z "${TRAVIS}" ]]; then
+    cecho "${red}" "Have you read through the script you're about to run and ";
+    cechon "${red}" "understood that it will make changes to your computer? (y/n): ";
     read -t 10 -r response
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       CONTINUE=true
     fi
+    cecho "${blue}" "Please enter some info so that the script can automate some of the settings."
+    read -t 10 -r -p 'Input your full name: ' USERNAME
+    read -t 10 -r -p 'Input email for ssh key: ' USEREMAIL
 else
-    cecho "${yellow}" "Running Continuous Integration."
+    cecho "${yellow}" "Running Continuous Integration.";
     CONTINUE=true
 fi
 
-if ! "${CONTINUE}"; then
+if [[ -z "${CONTINUE}" ]]; then
   # Check if we're continuing and output a message if not
   cecho "${red}" "Please go read the script, it only takes a few minutes"
   exit 1
@@ -88,12 +94,14 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 function InstallThis {
     for pkg in "$@"; do
-        sudo apt-get install -y "${pkg}" || true;
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${pkg}" || true;
+        sudo dpkg --configure -a || true;
     done
 }
 
 cecho "${green}" "Running package updates..."
 sudo apt-get update -qq
+sudo dpkg --configure -a || true;
 cecho "${green}" "Installing wget curl and gdebi as requirements!"
 InstallThis wget curl gdebi
 
@@ -102,32 +110,32 @@ function ReposInstaller {
     Version=$(lsb_release -cs)
 
     ## Git
-    sudo add-apt-repository -y ppa:git-core/ppa
+    sudo add-apt-repository -y ppa:git-core/ppa || true
 
     ## Sublime Text
-    wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-    echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+    wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - || true
+    echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list || true
 
     ## Docker
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - || true
     [ -z "${Version}" ] || sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
 
     ## VSCode
-    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-    sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-    sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg || true;
+    sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/ || true
+    sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list' || true;
 
     ## Atom
-    sudo add-apt-repository -y ppa:webupd8team/atom
+    sudo add-apt-repository -y ppa:webupd8team/atom || true
 
     ## Video tools
-    sudo add-apt-repository -y ppa:maarten-baert/simplescreenrecorder
-    sudo add-apt-repository -y ppa:openshot.developers/ppa
+    sudo add-apt-repository -y ppa:maarten-baert/simplescreenrecorder || true
+    sudo add-apt-repository -y ppa:openshot.developers/ppa || true
     sudo apt-get update
 
     ## Laptop battery management
-    sudo add-apt-repository -y ppa:linuxuprising/apps
-    sudo add-apt-repository -y ppa:linrunner/tlp
+    sudo add-apt-repository -y ppa:linuxuprising/apps || true
+    sudo add-apt-repository -y ppa:linrunner/tlp || true
 }
 
 ## Install few global Python packages
@@ -212,7 +220,7 @@ function DELL_XPS_TWEAKS {
     cecho "${red}" "############################################################"
 
     echon
-    if ! "${TRAVIS}"; then
+    if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
         echo -n "Do you want to proceed with tweaking your Dell XPS? (y/n):-> "
         read -t 10 -r response
@@ -250,7 +258,7 @@ function ArduinoUDevFixes {
 
 function GitSetUp {
 
-    if ! "${TRAVIS}"; then
+    if [[ -z "${TRAVIS}" ]]; then
         #############################################
         ### Generate ssh keys & add to ssh-agent
         ### See: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
@@ -258,19 +266,18 @@ function GitSetUp {
 
         cecho "${cyan}" "Setting up Git..."
         echo "Generating ssh keys, adding to ssh-agent..."
-        read -t 10 -r -p 'Input your full name: ' username
-        git config --global user.name "${username}"
-        read -t 10 -r -p 'Input email for ssh key: ' useremail
-        git config --global user.email "${useremail}"
+        git config --global user.name "${USERNAME}"
+        git config --global user.email "${USEREMAIL}"
         git config --global push.default simple
 
         echo "Use default ssh file location, enter a passphrase: "
-        ssh-keygen -t rsa -b 4096 -C "${useremail}"  # will prompt for password
+        # ssh-keygen -t rsa -b 4096 -C "${useremail}"  # will prompt for password
+        ssh-keygen -f id_rsa -t rsa -N '' -b 4096 -C "${USEREMAIL}" # will NOT prompt for password
         eval "$(ssh-agent -s)"
 
         # Now that sshconfig is synced add key to ssh-agent and
         # store passphrase in keychain
-        ssh-add -K ~/.ssh/id_rsa
+        ssh-add ~/.ssh/id_rsa
 
         #############################################
         ### Add ssh-key to GitHub via api
@@ -311,8 +318,8 @@ function installDotfiles {
     #############################################
     ### Install dotfiles repo
     #############################################
-    cecho "${red}" "Do you want to clone and install dotfiles? (y/n)"
-    if ! "${TRAVIS}"; then
+    cechon "${red}" "Do you want to clone and install dotfiles? (y/n)"
+    if [[ -z "${TRAVIS}" ]]; then
         read -t 10 -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             cd ~/
@@ -354,7 +361,6 @@ function PackagesInstaller {
     xUbuntuPackages
 
     ### Productivity tools
-    GitInstaller
     InstallThis terminator \
         htop \
         vim \
@@ -364,8 +370,8 @@ function PackagesInstaller {
         sqlite3 \
         axel \
         docker-ce \
-        colordiff
-    sudo apt-get install -y --install-suggests virtualbox
+        colordiff \
+        virtualbox
 
     GitInstaller
 
@@ -414,8 +420,8 @@ function PackagesInstaller {
 function Cleanup {
     cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
     echon
-    if ! "${TRAVIS}"; then
-        echo -n "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
+    if [[ -z "${TRAVIS}" ]]; then
+        cecho "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
         read -t 10 -r response
         if [ "$response" != "${response#[Yy]}" ] ;then
             sudo apt-get -y --allow-unauthenticated upgrade && \
