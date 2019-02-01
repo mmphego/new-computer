@@ -304,7 +304,6 @@ function GitSetUp {
     fi
 }
 
-
 function installDotfiles {
     #############################################
     ### Install dotfiles repo
@@ -316,8 +315,9 @@ function installDotfiles {
             cd ~/
             git init -q
             cecho "${cyan}" "Cloning (Overwriting) dot-files into ~/ "
-            git remote add -f -m origin git@github.com:mmphego/dot-files.git
-            git pull -f || true
+            git remote add -f -m origin git@github.com:mmphego/dot-files.git;
+            git checkout -f master || true;
+            git pull -f || true;
         fi
     fi
 }
@@ -338,6 +338,7 @@ function PackagesInstaller {
         axel \
         docker-ce \
         colordiff
+    sudo apt-get install -y --install-suggests virtualbox
 
     GitInstaller
 
@@ -421,7 +422,7 @@ ReposInstaller
 PackagesInstaller
 Cleanup
 installDotfiles
-if [[ $(sudo lshw | grep product | head -1) == *"XPS"* ]]; then
+if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
     DELL_XPS_TWEAKS
 fi
 
