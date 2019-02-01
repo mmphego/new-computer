@@ -14,6 +14,9 @@ if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ];
     exit 1
 fi
 
+# Un-attended install
+export DEBIAN_FRONTEND=noninteractive
+
 # Set the colours you can use
 # black=$(tput setaf 0)
 red=$(tput setaf 1)
