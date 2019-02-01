@@ -36,7 +36,7 @@ cecho() {
 }
 
 cechon() {
-  echo "${1}${2}${reset}"
+  echo -n "${1}${2}${reset}"
   return
 }
 
@@ -65,22 +65,19 @@ CONTINUE=false
 if [[ -z "${TRAVIS}" ]]; then
     cecho "${red}" "Have you read through the script you're about to run and ";
     cechon "${red}" "understood that it will make changes to your computer? (y/n): ";
-    read -t 10 -r response
+    read -r response
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-      CONTINUE=true
+        CONTINUE=true
+        cecho "${blue}" "Please enter some info so that the script can automate some of the settings."
+        read -r -p 'Input your full name: ' USERNAME
+        read -r -p 'Input email for ssh key: ' USEREMAIL
+    else
+        cecho "${red}" "Please go read the script, it only takes a few minutes"
+        exit 1
     fi
-    cecho "${blue}" "Please enter some info so that the script can automate some of the settings."
-    read -t 10 -r -p 'Input your full name: ' USERNAME
-    read -t 10 -r -p 'Input email for ssh key: ' USEREMAIL
 else
     cecho "${yellow}" "Running Continuous Integration.";
     CONTINUE=true
-fi
-
-if [[ -z "${CONTINUE}" ]]; then
-  # Check if we're continuing and output a message if not
-  cecho "${red}" "Please go read the script, it only takes a few minutes"
-  exit 1
 fi
 
 # Here we go.. ask for the administrator password upfront and run a
@@ -143,7 +140,9 @@ function PythonInstaller {
     cecho "${cyan}" "Installing global Python packages..."
     sudo apt-get -y install python-dev python-tk
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
-    pip install --user --ignore-installed -U -r pip-requirements.txt
+    if [ -f "pip-requirements.txt" ]; then
+        pip install --user --ignore-installed -U -r pip-requirements.txt
+    fi
 }
 
 function SlackInstaller {
@@ -223,7 +222,7 @@ function DELL_XPS_TWEAKS {
     if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
         echo -n "Do you want to proceed with tweaking your Dell XPS? (y/n):-> "
-        read -t 10 -r response
+        read -r response
         if [ "$response" != "${response#[Yy]}" ] ;then
             bash -c "$(curl -fsSL https://raw.githubusercontent.com/mmphego/dell-xps-9570-ubuntu-respin/master/xps-tweaks.sh)"
         fi
@@ -242,9 +241,11 @@ function DockerSetUp {
 
 function VSCodeSetUp {
     cecho "${cyan}" "Installing VSCode plugins..."
-    while read -r pkg; do
-        code --install-extension "${pkg}";
-    done < code_plugins.txt
+    if [ -f "code_plugins.txt" ]; then
+        while read -r pkg; do
+            code --install-extension "${pkg}";
+        done < code_plugins.txt
+    fi
 }
 
 function ArduinoUDevFixes {
@@ -290,7 +291,7 @@ function GitSetUp {
         cecho "${red}" "Now, have you read through the script you're about to run and "
         cecho "${red}" "understood that it will make changes to your computer?"
         cecho "${red}" "If you would like to continue press: y else n"
-        read -t 10 -r response
+        read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             retries=3
            while read -r key; do SSH_KEY="${key}"; done < ~/.ssh/id_rsa.pub
@@ -320,14 +321,13 @@ function installDotfiles {
     #############################################
     cechon "${red}" "Do you want to clone and install dotfiles? (y/n)"
     if [[ -z "${TRAVIS}" ]]; then
-        read -t 10 -r response
+        read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            cd ~/
-            git init -q
-            cecho "${cyan}" "Cloning (Overwriting) dot-files into ~/ "
-            git remote add -f -m origin git@github.com:mmphego/dot-files.git;
-            git checkout -f master || true;
-            git pull -f || true;
+            wget https://github.com/mmphego/dot-files/archive/master.zip
+            unzip master.zip
+            rsync -uar --delete-after dot-files-master/{.,}* $HOME
+            cd $HOME
+            bash .dotfiles/.dotfiles_setup.sh install
         fi
     fi
 }
@@ -371,13 +371,10 @@ function PackagesInstaller {
         axel \
         docker-ce \
         colordiff \
-        virtualbox
+        virtualbox \
+        rsync
 
     GitInstaller
-
-    ### Setup
-    DockerSetUp
-    GitSetUp
     TravisClientInstaller
 
     # Python Packages
@@ -421,8 +418,8 @@ function Cleanup {
     cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
     echon
     if [[ -z "${TRAVIS}" ]]; then
-        cecho "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)? "
-        read -t 10 -r response
+        cechon "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)?: "
+        read -r response
         if [ "$response" != "${response#[Yy]}" ] ;then
             sudo apt-get -y --allow-unauthenticated upgrade && \
             sudo apt-get autoclean && \
@@ -437,12 +434,16 @@ function Cleanup {
 ########################################
 ReposInstaller
 PackagesInstaller
-Cleanup
 installDotfiles
 if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
     DELL_XPS_TWEAKS
 fi
+Cleanup
 
 cecho "${white}" "################################################################################"
 cecho "${cyan}" "Done!"
-cecho "${cyan}" "Please Reboot system!"
+cechon "${cyan}" "Please Reboot system! (y/n): "
+read -r response
+if [ "$response" != "${response#[Yy]}" ] ;then
+    sudo shutdown -r
+fi
