@@ -11,7 +11,7 @@ before_install:
   - sudo apt-get install -y shellcheck
 
 script:
-  - bash installer.sh
+  - cd $HOME && bash -c "`curl -L https://git.io/runme`"
 
 after_script:
   - shellcheck installer.sh

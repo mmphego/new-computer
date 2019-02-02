@@ -96,12 +96,6 @@ function InstallThis {
     done
 }
 
-cecho "${green}" "Running package updates..."
-sudo apt-get update -qq
-sudo dpkg --configure -a || true;
-cecho "${green}" "Installing wget curl and gdebi as requirements!"
-InstallThis wget curl gdebi
-
 function ReposInstaller {
     cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
@@ -138,11 +132,15 @@ function ReposInstaller {
 ## Install few global Python packages
 function PythonInstaller {
     cecho "${cyan}" "Installing global Python packages..."
-    sudo apt-get -y install python-dev python-tk
-    curl https://bootstrap.pypa.io/get-pip.py | sudo python
-    if [ -f "pip-requirements.txt" ]; then
-        pip install --user --ignore-installed -U -r pip-requirements.txt
+    if [ ! -f "pip-requirements.txt" ]; then
+        wget https://raw.githubusercontent.com/mmphego/new-computer/master/pip-requirements.txt
     fi
+    sudo apt-get -y install python-dev
+    curl https://bootstrap.pypa.io/get-pip.py | sudo python
+    sudo pip install virtualenv
+    virtualenv ~/.venv
+    source ~/.venv/bin/activate
+    pip install -U -r pip-requirements.txt
 }
 
 function SlackInstaller {
@@ -227,7 +225,6 @@ function DELL_XPS_TWEAKS {
             bash -c "$(curl -fsSL https://raw.githubusercontent.com/mmphego/dell-xps-9570-ubuntu-respin/master/xps-tweaks.sh)"
         fi
     fi
-
 }
 
 ##########################################
@@ -325,9 +322,10 @@ function installDotfiles {
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             wget https://github.com/mmphego/dot-files/archive/master.zip
             unzip master.zip
-            rsync -uar --delete-after dot-files-master/{.,}* $HOME
-            cd $HOME
+            rsync -uar --delete-after dot-files-master/{.,}* "${HOME}"
+            cd "${HOME}" || true;
             bash .dotfiles/.dotfiles_setup.sh install
+            cd .. || true;
         fi
     fi
 }
@@ -358,7 +356,9 @@ function PackagesInstaller {
     InstallThis cowsay fortune-mod
 
     # Packages for xUbuntu
-    xUbuntuPackages
+    if [[ $(dpkg -l '*buntu-desktop' | grep ^ii | cut -f 3 -d ' ') == *"xubuntu"* ]]; then
+        xUbuntuPackages
+    fi
 
     ### Productivity tools
     InstallThis terminator \
@@ -382,9 +382,10 @@ function PackagesInstaller {
 
     ### Dev Editors and tools
     InstallThis code
-    if [ -f "code_plugins.txt" ]; then
-        VSCodeSetUp;
+    if [ ! -f "code_plugins.txt" ]; then
+        wget https://raw.githubusercontent.com/mmphego/new-computer/master/code_plugins.txt
     fi
+    VSCodeSetUp;
     InstallThis sublime-text
     AtomInstaller
     if command -v platformio >/dev/null ;then
@@ -427,11 +428,27 @@ function Cleanup {
         fi
     fi
     sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
+
+    cecho "${white}" "################################################################################"
+    cecho "${cyan}" "Done!"
+    if [[ -z "${TRAVIS}" ]]; then
+        cechon "${cyan}" "Please Reboot system! (y/n): "
+        read -t 10 -r response
+        if [ "$response" != "${response#[Yy]}" ] ;then
+            sudo shutdown -r
+        fi
+    fi
 }
 
 ########################################
 ########### THE SETUP ##################
 ########################################
+cecho "${green}" "Running package updates..."
+sudo apt-get update -qq
+sudo dpkg --configure -a || true;
+cecho "${green}" "Installing wget curl and gdebi as requirements!"
+InstallThis wget curl gdebi
+
 ReposInstaller
 PackagesInstaller
 installDotfiles
@@ -440,12 +457,3 @@ if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
 fi
 Cleanup
 
-cecho "${white}" "################################################################################"
-cecho "${cyan}" "Done!"
-if [[ -z "${TRAVIS}" ]]; then
-    cechon "${cyan}" "Please Reboot system! (y/n): "
-    read -t 10 -r response
-    if [ "$response" != "${response#[Yy]}" ] ;then
-        sudo shutdown -r
-    fi
-fi
