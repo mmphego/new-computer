@@ -442,8 +442,10 @@ Cleanup
 
 cecho "${white}" "################################################################################"
 cecho "${cyan}" "Done!"
-cechon "${cyan}" "Please Reboot system! (y/n): "
-read -r response
-if [ "$response" != "${response#[Yy]}" ] ;then
-    sudo shutdown -r
+if [[ -z "${TRAVIS}" ]]; then
+    cechon "${cyan}" "Please Reboot system! (y/n): "
+    read -t 10 -r response
+    if [ "$response" != "${response#[Yy]}" ] ;then
+        sudo shutdown -r
+    fi
 fi
