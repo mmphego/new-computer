@@ -350,7 +350,7 @@ function PackagesInstaller {
 
     ### Network tools
     InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
-        gnome-calculator ethtool
+        gnome-calculator ethtool vnstat
 
     ### Fun tools
     InstallThis cowsay fortune-mod
