@@ -271,7 +271,7 @@ function GitSetUp {
 
         echo "Use default ssh file location, enter a passphrase: "
         # ssh-keygen -t rsa -b 4096 -C "${useremail}"  # will prompt for password
-        ssh-keygen -f id_rsa -t rsa -N '' -b 4096 -C "${USEREMAIL}" # will NOT prompt for password
+        ssh-keygen -f ~/.ssh/id_rsa -t rsa -N '' -b 4096 -C "${USEREMAIL}" # will NOT prompt for password
         eval "$(ssh-agent -s)"
 
         # Now that sshconfig is synced add key to ssh-agent and
