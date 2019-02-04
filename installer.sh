@@ -70,7 +70,7 @@ if [[ -z "${TRAVIS}" ]]; then
         CONTINUE=true
         cecho "${blue}" "Please enter some info so that the script can automate some of the settings."
         read -r -p 'Input your full name: ' USERNAME
-        read -r -p 'Input email for ssh key: ' USEREMAIL
+        read -r -p 'Input email for generating ssh keys: ' USEREMAIL
     else
         cecho "${red}" "Please go read the script, it only takes a few minutes"
         exit 1
@@ -282,33 +282,24 @@ function GitSetUp {
         ### Add ssh-key to GitHub via api
         #############################################
 
-        cecho "${green}" "Adding ssh-key to GitHub (via api)..."
-        cecho "${red}" "Important! For this step, use a github personal token with the admin:public_key permission."
-        cecho "${red}" "If you don't have one, create it here: https://github.com/settings/tokens/new"
+        cecho "${green}" "Adding ssh-key to GitHub (via api.github.com)..."
         echon
-        cecho "${red}" "Now, have you read through the script you're about to run and "
-        cecho "${red}" "understood that it will make changes to your computer?"
-        cecho "${red}" "If you would like to continue press: y else n"
+        cecho "${red}" "This will require you to login GitHub's api with your username and password "
+        cecho "${red}" "No PASSWORDS ARE SAVED."
+        cecho "${red}" "Enter Y/N to continue: "
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            retries=3
-           while read -r key; do SSH_KEY="${key}"; done < ~/.ssh/id_rsa.pub
-            for ((i=0; i<retries; i++)); do
-                  read -r -p 'GitHub username: ' ghusername
-                  read -r -p 'Machine name: ' ghtitle
-                  read -r -sp 'GitHub personal token: ' ghtoken
+            GHDATA="{"\"title"\":"\"test-key"\","\"key"\":"\"$(cat ~/.ssh/id_rsa.pub)"\"}"
+            read -r -p 'Enter your GitHub username: ' GHUSERNAME
+            gh_retcode=$(curl -o /dev/null -s -w "\"%{http_code}"\" -u "\"${GHUSERNAME}"\" --data "\"${GHDATA}"\" https://api.github.com/user/keys)
 
-                  gh_status_code=$(curl -o /dev/null -s -w "%{http_code}\n" -u "${ghusername}:${ghtoken}" -d '{"title":"'"${ghtitle}"'","key":"'"${SSH_KEY}"'"}' 'https://api.github.com/user/keys')
-
-                  if (( "${gh_status_code}" == 201)); then
-                      cecho "${cyan}" "GitHub ssh key added successfully!"
-                      break
-                  else
-                        echo "Something went wrong. Enter your credentials and try again..."
-                        echo -n "Status code returned: ${gh_status_code}"
-                  fi
-            done
-            [[ "${retries}" -eq i ]] && cecho "${red}" "Adding ssh-key to GitHub failed! Try again later."
+            if (( "${gh_retcode}" == 201)); then
+                cecho "${cyan}" "GitHub ssh-key added successfully!"
+            else
+                cecho "${red}" "Something went wrong."
+                cecho "${red}" "You will need to do it manually."
+                cecho "${red}" "Open: https://github.com/settings/keys/new"
+            fi
         fi
     fi
 }
