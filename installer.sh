@@ -168,7 +168,7 @@ function AtomInstaller {
 }
 
 function xUbuntuPackages {
-    InstallThis xubuntu-icon-theme xfce4-*
+    InstallThis xubuntu-icon-theme xfce4-* xscreensaver
 }
 
 function LatexInstaller {
