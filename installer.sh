@@ -286,13 +286,12 @@ function GitSetUp {
         echon
         cecho "${red}" "This will require you to login GitHub's api with your username and password "
         cecho "${red}" "No PASSWORDS ARE SAVED."
-        cecho "${red}" "Enter Y/N to continue: "
+        cechon "${red}" "Enter Y/N to continue: "
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             GHDATA="{"\"title"\":"\"test-key"\","\"key"\":"\"$(cat ~/.ssh/id_rsa.pub)"\"}"
             read -r -p 'Enter your GitHub username: ' GHUSERNAME
-            gh_retcode=$(curl -o /dev/null -s -w "\"%{http_code}"\" -u "\"${GHUSERNAME}"\" --data "\"${GHDATA}"\" https://api.github.com/user/keys)
-
+            gh_retcode=$(curl -s -w "%{http_code}" -u "${GHUSERNAME}" --data "${GHDATA}" https://api.github.com/user/keys)
             if (( "${gh_retcode}" == 201)); then
                 cecho "${cyan}" "GitHub ssh-key added successfully!"
             else
@@ -308,8 +307,8 @@ function installDotfiles {
     #############################################
     ### Install dotfiles repo
     #############################################
-    cechon "${red}" "Do you want to clone and install dotfiles? (y/n)"
     if [[ -z "${TRAVIS}" ]]; then
+        cechon "${red}" "Do you want to clone and install dotfiles? (y/n)"
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             wget https://github.com/mmphego/dot-files/archive/master.zip
@@ -318,6 +317,9 @@ function installDotfiles {
             cd "${HOME}" || true;
             bash .dotfiles/.dotfiles_setup.sh install
             cd .. || true;
+            find ~/.config/ *.xml -type f -prune | while read -r FILE;
+                do sed -i "s/mmphego/${USER}/g" "${FILE}";
+            done
         fi
     fi
 }
@@ -429,7 +431,7 @@ function Cleanup {
         cechon "${cyan}" "Please Reboot system! (y/n): "
         read -t 10 -r response
         if [ "$response" != "${response#[Yy]}" ] ;then
-            sudo shutdown -r
+            sudo shutdown -r now
         fi
     fi
 }
