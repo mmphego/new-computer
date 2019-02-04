@@ -93,6 +93,7 @@ function InstallThis {
     for pkg in "$@"; do
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${pkg}" || true;
         sudo dpkg --configure -a || true;
+        sudo apt-get autoclean && sudo apt-get clean;
     done
 }
 
@@ -135,7 +136,7 @@ function PythonInstaller {
     if [ ! -f "pip-requirements.txt" ]; then
         wget https://raw.githubusercontent.com/mmphego/new-computer/master/pip-requirements.txt
     fi
-    sudo apt-get -y install python-dev
+    InstallThis python-dev python3-dev python3.7
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
     sudo pip install virtualenv
     virtualenv ~/.venv
@@ -184,7 +185,7 @@ function LatexInstaller {
 }
 
 function GitInstaller {
-    cecho "${cyan}" "Installing Git..."
+    cecho "${cyan}" "Installing Git+Hub..."
     # wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
     # sudo gdebi -n libc.deb || true
     InstallThis git
@@ -389,6 +390,8 @@ function PackagesInstaller {
     InstallThis sublime-text
     AtomInstaller
     if command -v platformio >/dev/null ;then
+        # Arduino hot fixes
+        # See: https://docs.platformio.org/en/latest/faq.html#id15
         ArduinoUDevFixes;
     fi
 
