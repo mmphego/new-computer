@@ -168,7 +168,18 @@ function AtomInstaller {
 }
 
 function xUbuntuPackages {
-    InstallThis xubuntu-icon-theme xfce4-* xscreensaver
+    InstallThis xubuntu-icon-theme \
+        xfce4-* \
+        xscreensaver \
+        xubuntu-restricted-addons \
+        xubuntu-restricted-extras \
+        xubuntu-icon-theme \
+        blackbird-gtk-theme \
+        albatross-gtk-theme \
+        ubiquity-slideshow-xubuntu \
+        xfwm4-themes \
+        xfwm4-theme-breeze \
+        xfdashboard-plugins
 }
 
 function LatexInstaller {
