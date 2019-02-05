@@ -304,7 +304,7 @@ function GitSetUp {
         cechon "${red}" "Enter Y/N to continue: "
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            GHDATA="{"\"title"\":"\"test-key"\","\"key"\":"\"$(cat ~/.ssh/id_rsa.pub)"\"}"
+            GHDATA="{"\"title"\":"\"$(hostname)"\","\"key"\":"\"$(cat ~/.ssh/id_rsa.pub)"\"}"
             read -r -p 'Enter your GitHub username: ' GHUSERNAME
             gh_retcode=$(curl -s -w "%{http_code}" -u "${GHUSERNAME}" --data "${GHDATA}" https://api.github.com/user/keys)
             if (( "${gh_retcode}" == 201)); then
