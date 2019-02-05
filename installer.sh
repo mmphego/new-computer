@@ -68,9 +68,9 @@ if [[ -z "${TRAVIS}" ]]; then
     read -r response
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         CONTINUE=true
-        cecho "${blue}" "Please enter some info so that the script can automate some of the settings."
-        read -r -p 'Input your full name: ' USERNAME
-        read -r -p 'Input email for generating ssh keys: ' USEREMAIL
+        cecho "${blue}" "Please enter some info so that the script can automate the boring stuff."
+        read -r -p 'Enter your full name: ' USERNAME
+        read -r -p 'Enter your email address: ' USEREMAIL
     else
         cecho "${red}" "Please go read the script, it only takes a few minutes"
         exit 1
@@ -123,11 +123,11 @@ function ReposInstaller {
     ## Video tools
     sudo add-apt-repository -y ppa:maarten-baert/simplescreenrecorder || true
     sudo add-apt-repository -y ppa:openshot.developers/ppa || true
-    sudo apt-get update
 
     ## Laptop battery management
     sudo add-apt-repository -y ppa:linuxuprising/apps || true
     sudo add-apt-repository -y ppa:linrunner/tlp || true
+    sudo apt-get update -qq
 }
 
 ## Install few global Python packages
@@ -184,7 +184,6 @@ function xUbuntuPackages {
 
 function LatexInstaller {
     InstallThis chktex \
-        gummi \
         latexmk \
         pandoc \
         texlive-bibtex-extra \
@@ -218,21 +217,21 @@ function DELL_XPS_TWEAKS {
     echon
     cecho "${red}" "############################################################"
     cecho "${red}" "#                                                          #"
-    cecho "${red}" "#   A collection of scripts and tweaks to make             #"
-    cecho "${red}" "#   Ubuntu 18.04 run smooth on Dell XPS 15 9570            #"
+    cecho "${red}" "#       A collection of scripts and tweaks to make         #"
+    cecho "${red}" "#       Ubuntu 18.04 run smooth on Dell XPS 15 9570        #"
     cecho "${red}" "#                                                          #"
     cecho "${red}" "#            DO NOT RUN THIS SCRIPT BLINDLY                #"
     cecho "${red}" "#               YOU'LL PROBABLY REGRET IT...               #"
     cecho "${red}" "#                                                          #"
-    cecho "${red}" "#               READ IT THOROUGHLY                         #"
-    cecho "${red}" "#           AND EDIT TO SUIT YOUR NEEDS                    #"
+    cecho "${red}" "#               READ IT THOROUGHLY,                        #"
+    cecho "${red}" "#               EDIT TO SUIT YOUR NEEDS AND,               #"
     cecho "${red}" "#               GO VIEW THE SCRIPT HERE!                   #"
     cecho "${red}" "#                                                          #"
     cecho "${red}" "#   https://github.com/mmphego/dell-xps-9570-ubuntu-respin #"
     cecho "${red}" "#                                                          #"
     cecho "${red}" "############################################################"
-
     echon
+
     if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
         echo -n "Do you want to proceed with tweaking your Dell XPS? (y/n):-> "
@@ -307,12 +306,14 @@ function GitSetUp {
             GHDATA="{"\"title"\":"\"$(hostname)"\","\"key"\":"\"$(cat ~/.ssh/id_rsa.pub)"\"}"
             read -r -p 'Enter your GitHub username: ' GHUSERNAME
             gh_retcode=$(curl -s -w "%{http_code}" -u "${GHUSERNAME}" --data "${GHDATA}" https://api.github.com/user/keys)
-            if (( "${gh_retcode}" == 201)); then
+            if (( "${gh_retcode}" == 201 )); then
                 cecho "${cyan}" "GitHub ssh-key added successfully!"
+                echo
             else
                 cecho "${red}" "Something went wrong."
                 cecho "${red}" "You will need to do it manually."
                 cecho "${red}" "Open: https://github.com/settings/keys/new"
+                echo
             fi
         fi
     fi
