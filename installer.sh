@@ -173,11 +173,15 @@ function xUbuntuPackages {
 
 function LatexInstaller {
     InstallThis chktex \
+        gummi \
         latexmk \
         pandoc \
+        texlive-bibtex-extra \
+        texlive-extra-utils \
         texlive-font-utils \
+        texlive-lang-english \
         texlive-latex-extra \
-        gummi \
+        texlive-latex-extra \
         texlive-pictures \
         texlive-pstricks \
         texlive-science \
