@@ -277,7 +277,7 @@ function GitSetUp {
         #############################################
 
         cecho "${cyan}" "Setting up Git..."
-        echo "Generating ssh keys, adding to ssh-agent..."
+        cecho "${green}"  "Generating SSH keys, adding to ssh-agent..."
         git config --global user.name "${USERNAME}"
         git config --global user.email "${USEREMAIL}"
         git config --global push.default simple
@@ -291,10 +291,10 @@ function GitSetUp {
         # store passphrase in keychain
         ssh-add ~/.ssh/id_rsa
 
-        #############################################
-        ### Add ssh-key to GitHub via api
-        #############################################
-
+        cecho "${green}" "##############################################"
+        cecho "${green}" "### Add SSH and GPG keys to GitHub via API ###"
+        cecho "${green}" "##############################################"
+        echo
         cecho "${green}" "Adding ssh-key to GitHub (via api.github.com)..."
         echon
         cecho "${red}" "This will require you to login GitHub's api with your username and password "
@@ -311,9 +311,41 @@ function GitSetUp {
             else
                 cecho "${red}" "Something went wrong."
                 cecho "${red}" "You will need to do it manually."
-                cecho "${red}" "Open: https://github.com/settings/keys/new"
+                cecho "${red}" "Open: https://github.com/settings/keys"
                 echo
             fi
+        fi
+
+        cecho "${green}" "Add GPG-keys to GitHub (via api.github.com)..."
+        echon
+        cecho "${red}" "This will require you to login GitHub's API with your username and password "
+        cechon "${red}" "Enter Y/N to continue: "
+        read -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            # https://developer.github.com/v3/users/gpg_keys/#
+            cecho "${green}" "Generating GPG keys, please follow the prompts."
+            if [ -f "github_gpg.py" ]; then
+                wget https://raw.githubusercontent.com/mmphego/new-computer/master/github_gpg.py
+            fi
+
+            if gpg --full-generate-key; then
+                MY_GPG_KEY=$(gpg --list-secret-keys --keyid-format LONG | grep ^sec | tail -1 | cut -f 2 -d "/" | cut -f 1 -d " ")
+                gpg --armor --export "${MY_GPG_KEY}" > gpg_keys.txt
+                read -r -p 'Enter your GitHub username: ' GHUSERNAME
+                read -s -p 'Enter your GitHub password: ' GHPASSWORD
+                if python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
+                    cecho "${cyan}" "GitHub gpg-key added successfully!"
+                    echo
+                else
+                    cecho "${red}" "Something went wrong."
+                    cecho "${red}" "You will need to do it manually."
+                    cecho "${red}" "Open: https://github.com/settings/keys"
+                    echo
+                fi
+            else
+                cecho "${red}" "gpg2 is not installed"
+            fi
+            rm -rf gpg_keys.txt || true;
         fi
     fi
 }
@@ -332,9 +364,6 @@ function installDotfiles {
             cd "${HOME}" || true;
             bash .dotfiles/.dotfiles_setup.sh install
             cd .. || true;
-            find ~/.config/ *.xml -type f -prune | while read -r FILE;
-                do sed -i "s/mmphego/${USER}/g" "${FILE}";
-            done
         fi
     fi
 }
@@ -370,18 +399,29 @@ function PackagesInstaller {
     fi
 
     ### Productivity tools
-    InstallThis terminator \
-        htop \
-        vim \
-        rar \
+    InstallThis axel \
+        bzip2 \
         chromium-browser \
-        gawk \
-        sqlite3 \
-        axel \
-        docker-ce \
         colordiff \
+        coreutils \
+        docker-ce \
+        file \
+        gawk \
+        gnupg2 \
+        grep \
+        gzip \
+        htop \
+        jq \
+        lzip \
+        openssh-server \
+        rar \
+        rsync \
+        sed  \
+        sqlite3 \
+        terminator \
+        vim \
         virtualbox \
-        rsync
+        xz-utils \
 
     GitInstaller
     TravisClientInstaller
