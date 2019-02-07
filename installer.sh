@@ -333,9 +333,10 @@ function GitSetUp {
                 # native shell
                 #gpg --armour --export $(gpg -K --keyid-format LONG | grep ^sec | sed 's/.*\/\([^ ]\+\).*$/\1/') | jq -nsR '.armored_public_key = inputs' | curl -X POST -u "$GITHUB_USER:$GITHUB_TOKEN" --data-binary @- https://api.github.com/user/gpg_keys
                 gpg --armor --export "${MY_GPG_KEY}" > gpg_keys.txt
+                echo
                 read -r -p 'Enter your GitHub username: ' GHUSERNAME
                 read -s -p 'Enter your GitHub password: ' GHPASSWORD
-                if python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
+                if ~/.venv/bin/python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
                     cecho "${cyan}" "GitHub gpg-key added successfully!"
                     git config --global commit.gpgsign true
                     echo

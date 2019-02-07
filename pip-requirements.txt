@@ -8,3 +8,4 @@ speedtest-cli
 wheel
 platformio
 setuptools
+requests
