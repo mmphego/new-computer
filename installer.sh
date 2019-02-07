@@ -304,8 +304,8 @@ function GitSetUp {
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             GHDATA="{"\"title"\":"\"$(hostname)"\","\"key"\":"\"$(cat ~/.ssh/id_rsa.pub)"\"}"
             read -r -p 'Enter your GitHub username: ' GHUSERNAME
-            gh_retcode=$(curl -s -w "%{http_code}" -u "${GHUSERNAME}" --data "${GHDATA}" https://api.github.com/user/keys)
-            if (( "${gh_retcode}" == 201 )); then
+            gh_retcode=$(curl -o /dev/null -s -w "%{http_code}" -u "${GHUSERNAME}" --data "${GHDATA}" https://api.github.com/user/keys)
+            if [[ "${gh_retcode}" -ge 201 ]]; then
                 cecho "${cyan}" "GitHub ssh-key added successfully!"
                 echo
             else
@@ -324,7 +324,7 @@ function GitSetUp {
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             # https://developer.github.com/v3/users/gpg_keys/#
             cecho "${green}" "Generating GPG keys, please follow the prompts."
-            if [ -f "github_gpg.py" ]; then
+            if [ ! -f "github_gpg.py" ]; then
                 wget https://raw.githubusercontent.com/mmphego/new-computer/master/github_gpg.py
             fi
 
