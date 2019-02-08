@@ -14,5 +14,6 @@ script:
   - cd $HOME && bash -c "`curl -L https://git.io/runme`"
 
 after_script:
+  - wget https://git.io/runme
   - shellcheck runme
   - vnstat

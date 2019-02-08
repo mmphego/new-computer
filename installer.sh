@@ -85,6 +85,29 @@ fi
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+
+# Retries a command on failure.
+# $1 - the max number of attempts
+# $2... - the command to run
+function retry_cmd {
+    local -r -i max_attempts="$1"; shift
+    local -r cmd="$@"
+    local -i attempt_num=1
+
+    until $cmd
+    do
+        if (( attempt_num == max_attempts ))
+        then
+            echo "Attempt $attempt_num failed and there are no more attempts left!"
+            return 1
+        else
+            echo "Attempt $attempt_num failed! Trying again in $attempt_num seconds..."
+            sleep $(( attempt_num++ ))
+        fi
+    done
+}
+
+
 ############################################
 # Prerequisite: Update package source list #
 ############################################
@@ -127,6 +150,7 @@ function ReposInstaller {
     sudo add-apt-repository -y ppa:linuxuprising/apps || true
     sudo add-apt-repository -y ppa:linrunner/tlp || true
     sudo apt-get update -qq
+    rm -rf -- *.gpg
 }
 
 ## Install few global Python packages
@@ -141,11 +165,13 @@ function PythonInstaller {
     virtualenv ~/.venv
     source ~/.venv/bin/activate
     pip install -U -r pip-requirements.txt
+    rm -rf pip-requirements.txt
 }
 
 function SlackInstaller {
     cecho "${cyan}" "Installing Slack..."
-    wget -O slack.deb https://downloads.slack-edge.com/linux_releases/slack-desktop-3.3.3-amd64.deb
+    VERSION=3.3.7
+    wget -O slack.deb "https://downloads.slack-edge.com/linux_releases/slack-desktop-${VERSION}-amd64.deb"
     sudo gdebi -n slack.deb
 }
 
@@ -198,13 +224,15 @@ function LatexInstaller {
 }
 
 function GitInstaller {
-    cecho "${cyan}" "Installing Git+Hub..."
-    # wget -O libc.deb http://za.archive.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.28-0ubuntu1_amd64.deb
-    # sudo gdebi -n libc.deb || true
+    cecho "${cyan}" "Installing Git"
     InstallThis git
-    wget https://github.com/github/hub/releases/download/v2.6.0/hub-linux-386-2.6.0.tgz -O - | tar -zxf -
-    sudo prefix=/usr/local hub-linux-386-2.6.0/install
-    rm -rf hub-linux*
+    URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | grep "browser_" | cut -d\" -f4 | $(which grep) "linux-amd64")
+    wget "${URL}" -O - | tar -zxf -
+    cecho "${cyan}" "Installing Hub"
+    find . -name hub* -type d | while read -r DIR;do
+        sudo prefix=/usr/local "${DIR}"/install
+    done
+    rm -rf -- hub-linux*
 }
 
 function TravisClientInstaller {
@@ -233,9 +261,9 @@ function DELL_XPS_TWEAKS {
 
     if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
-        echo -n "Do you want to proceed with tweaking your Dell XPS? (y/n):-> "
+        cechon "${red}" "Do you want to proceed with tweaking your Dell XPS? (y/n): "
         read -r response
-        if [ "$response" != "${response#[Yy]}" ] ;then
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             bash -c "$(curl -fsSL https://raw.githubusercontent.com/mmphego/dell-xps-9570-ubuntu-respin/master/xps-tweaks.sh)"
         fi
     fi
@@ -252,11 +280,13 @@ function DockerSetUp {
 
 function VSCodeSetUp {
     cecho "${cyan}" "Installing VSCode plugins..."
-    if [ -f "code_plugins.txt" ]; then
-        while read -r pkg; do
-            code --install-extension "${pkg}";
-        done < code_plugins.txt
+    if [ ! -f "code_plugins.txt" ]; then
+        wget https://raw.githubusercontent.com/mmphego/new-computer/master/code_plugins.txt
     fi
+    while read -r pkg; do
+        retry_cmd 5 code --install-extension "${pkg}" --force
+    done < code_plugins.txt
+    rm -rf code_plugins.txt
 }
 
 function ArduinoUDevFixes {
@@ -316,8 +346,9 @@ function GitSetUp {
             fi
         fi
 
+        cecho "${white}" "##############################################"
         cecho "${green}" "Add GPG-keys to GitHub (via api.github.com)..."
-        echon
+        echo
         cecho "${red}" "This will require you to login GitHub's API with your username and password "
         cechon "${red}" "Enter Y/N to continue: "
         read -r response
@@ -333,11 +364,13 @@ function GitSetUp {
                 # native shell
                 #gpg --armour --export $(gpg -K --keyid-format LONG | grep ^sec | sed 's/.*\/\([^ ]\+\).*$/\1/') | jq -nsR '.armored_public_key = inputs' | curl -X POST -u "$GITHUB_USER:$GITHUB_TOKEN" --data-binary @- https://api.github.com/user/gpg_keys
                 gpg --armor --export "${MY_GPG_KEY}" > gpg_keys.txt
+                cecho "${cyan}" "Successfully generated GPG keys!"
                 echo
                 read -r -p 'Enter your GitHub username: ' GHUSERNAME
                 read -s -p 'Enter your GitHub password: ' GHPASSWORD
                 if ~/.venv/bin/python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
-                    cecho "${cyan}" "GitHub gpg-key added successfully!"
+                    echo
+                    cecho "${cyan}" "GitHub PGP-Key added successfully!"
                     git config --global commit.gpgsign true
                     echo
                 else
@@ -359,7 +392,7 @@ function installDotfiles {
     ### Install dotfiles repo
     #############################################
     if [[ -z "${TRAVIS}" ]]; then
-        cechon "${red}" "Do you want to clone and install dotfiles? (y/n)"
+        cechon "${red}" "Do you want to clone and install dotfiles? (y/n): "
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             wget https://github.com/mmphego/dot-files/archive/master.zip
@@ -368,6 +401,9 @@ function installDotfiles {
             cd "${HOME}" || true;
             bash .dotfiles/.dotfiles_setup.sh install
             cd .. || true;
+            find "${HOME}/.config/" -type f -name '*.xml' -prune | while read -r FILE;
+                do sed -i "s/mmphego/${USER}/g" "${FILE}";
+            done
         fi
     fi
 }
@@ -421,6 +457,7 @@ function PackagesInstaller {
         rar \
         rsync \
         sed  \
+        shellcheck \
         sqlite3 \
         terminator \
         vim \
@@ -436,20 +473,8 @@ function PackagesInstaller {
 
     ### Dev Editors and tools
     InstallThis code
-    if [ ! -f "code_plugins.txt" ]; then
-        wget https://raw.githubusercontent.com/mmphego/new-computer/master/code_plugins.txt
-    fi
-    VSCodeSetUp;
     InstallThis sublime-text
     AtomInstaller
-    if command -v platformio >/dev/null ;then
-        # Arduino hot fixes
-        # See: https://docs.platformio.org/en/latest/faq.html#id15
-        ArduinoUDevFixes;
-    fi
-
-    ## Linters
-    InstallThis shellcheck
 
     ## Cloud
     MEGAInstaller
@@ -467,30 +492,41 @@ function PackagesInstaller {
     ####################
     ### Setup
     ####################
+    if command -v platformio >/dev/null ;then
+        # Arduino hot fixes
+        # See: https://docs.platformio.org/en/latest/faq.html#id15
+        ArduinoUDevFixes;
+    fi
+    VSCodeSetUp;
     DockerSetUp
     GitSetUp
+
+    cecho "${white}" "################################################################################"
 }
 
 function Cleanup {
+    echon
     cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
     echon
+    sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
     if [[ -z "${TRAVIS}" ]]; then
         cechon "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)?: "
         read -r response
         if [ "$response" != "${response#[Yy]}" ] ;then
             sudo apt-get -y --allow-unauthenticated upgrade && \
-            sudo apt-get autoclean && \
+            sudo apt-get clean && sudo apt-get autoclean && \
             sudo apt-get autoremove
         fi
     fi
-    sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
-
+    echon
     cecho "${white}" "################################################################################"
+    echon
     cecho "${cyan}" "Done!"
     if [[ -z "${TRAVIS}" ]]; then
+        cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
         cechon "${cyan}" "Please Reboot system! (y/n): "
-        read -t 10 -r response
-        if [ "$response" != "${response#[Yy]}" ] ;then
+        read -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
             sudo shutdown -r now
         fi
     fi
@@ -500,7 +536,7 @@ function Cleanup {
 ########### THE SETUP ##################
 ########################################
 cecho "${green}" "Running package updates..."
-sudo apt-get update -qq
+sudo apt-get update -qq || true;
 sudo dpkg --configure -a || true;
 cecho "${green}" "Installing wget curl and gdebi as requirements!"
 InstallThis wget curl gdebi

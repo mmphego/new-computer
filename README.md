@@ -5,13 +5,13 @@
 My personal system set-up script which installs most of the packages I need on a daily basis after a fresh [X]Ubuntu system install. Added [support for tweaking Dell XPS 15](http://github.com/mmphego/dell-xps-9570-ubuntu-respin/)
 
 What is installed?
--  Basics(git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
+-  Basics (git, curl, pinta, gdebi, gparted, sshfs, vim and a couple of other packages)
 -  Python-pip and [few modules](pip-requirements.txt)
 -  [Docker](https://www.docker.com/)
 -  [VSCode](https://code.visualstudio.com) and [Sublime-Text](www.sublimetext.com/3)
 -  [Slack](https://slack.com)
 -  [Megasync](https://mega.nz)
--  [Gummi](https://github.com/alexandervdm/gummis) and Latex dependencies
+-  [Latex]() and all relevant dependencies
 -  [Mendeley](https://www.mendeley.com), and etc
 
 ## Install from script
