@@ -135,7 +135,7 @@ function PythonInstaller {
     if [ ! -f "pip-requirements.txt" ]; then
         wget https://raw.githubusercontent.com/mmphego/new-computer/master/pip-requirements.txt
     fi
-    InstallThis python-dev python3-dev python3.7
+    InstallThis python-dev python3.7-dev python3.7
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
     sudo pip install virtualenv
     virtualenv ~/.venv
@@ -426,6 +426,7 @@ function PackagesInstaller {
         vim \
         virtualbox \
         xz-utils \
+        nodejs
 
     GitInstaller
     TravisClientInstaller
