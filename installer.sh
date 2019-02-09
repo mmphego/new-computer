@@ -149,6 +149,9 @@ function ReposInstaller {
     ## Laptop battery management
     sudo add-apt-repository -y ppa:linuxuprising/apps || true
     sudo add-apt-repository -y ppa:linrunner/tlp || true
+
+    # elementary-os packages
+    sudo add-apt-repository -y ppa:elementary-os/stable || true
     sudo apt-get update -qq
     rm -rf -- *.gpg
 }
@@ -454,6 +457,7 @@ function PackagesInstaller {
         jq \
         lzip \
         openssh-server \
+        ranger \
         rar \
         rsync \
         sed  \
@@ -488,6 +492,9 @@ function PackagesInstaller {
     ### Academic tools
     MendeleyInstaller
     LatexInstaller
+
+    ### File Manager
+    InstallThis pantheon-files
 
     ####################
     ### Setup
@@ -548,4 +555,3 @@ if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
     DELL_XPS_TWEAKS
 fi
 Cleanup
-
