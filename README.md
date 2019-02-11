@@ -25,7 +25,7 @@ Here are some of the things that gets set up:
 - Installs 3 text editors/IDE namely:  [VSCode](https://code.visualstudio.com) including [plugins](code_plugins.txt), [Sublime-Text](www.sublimetext.com/3) and [Atom](https://atom.io/).
 - Supports for Arduino/IoT development using [Platfomio](https://platformio.org/) library intergrated on VScode and Atom.
 - Installs [Slack](https://slack.com) for colabs, [Megasync](https://mega.nz) and [Dropbox](https://www.dropbox.com/) for cloud storage.
-- Installs Academic tools such as [Latex](https://www.latex-project.org/get/) including extras,  [Mendeley](https://www.mendeley.com) for research management and, [Zatora](https://www.zotero.org/) for reference management.
+- Installs Academic tools such as [Latex](https://www.latex-project.org/get/) including extras,  [Mendeley](https://www.mendeley.com) for research management and, [Zotero](https://www.zotero.org/) for reference management.
 - Installs [a collection of scripts and tweaks to make [X]Ubuntu 18.04 run smooth on Dell XPS 15 9570 ](https://github.com/mmphego/dell-xps-9570-ubuntu-respin), if you are running a [Dell XPS 15](https://www.dell.com/en-us/shop/dell-laptops/xps-15/spd/xps-15-9570-laptop)
 - Installs [my dotfiles](https://github.com/mmphego/dot-files)
 
