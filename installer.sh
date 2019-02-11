@@ -130,6 +130,14 @@ function ReposInstaller {
     ## Sublime Text
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - || true
     echo "deb [trusted=yes] https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list || true
+
+    # Dropbox
+    [ -z "${Version}" ] || echo "deb [trusted=yes] http://linux.dropbox.com/ubuntu ${Version} main" | sudo tee /etc/apt/sources.list.d/dropbox.list
+    sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E || true
+
+    # Zotero stand-alone
+    sudo add-apt-repository -y ppa:smathot/cogscinl
+
     ## Docker
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - || true
     [ -z "${Version}" ] || sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
@@ -184,6 +192,15 @@ function MEGAInstaller {
     sudo gdebi -n "megasync-xUbuntu_${ID}_amd64.deb"
 }
 
+function DropboxInstaller() {
+    Version=$(curl -s https://linux.dropboxstatic.com/packages/ubuntu/ | $(which grep) -P '^(?=.*drop*)(?=.*amd64)' |  $(which grep) -oP '(?<=>).*(?=<)' | tail -1)
+    wget "https://linux.dropboxstatic.com/packages/ubuntu/${Version}"
+    sudo gdebi -n "${Version}"
+    [[ "$(command -v io.elementary.files)" > /dev/null ]] && InstallThis pantheon-files-plugin-dropbox || true
+    [[ "$(command -v thunar)" > /dev/null ]] && InstallThis thunar-dropbox-plugin || true
+    [[ "$(command -v nautilus)" > /dev/null ]] && InstallThis nautilus-dropbox || true
+}
+
 function MendeleyInstaller {
     wget -O mendeley.deb https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
     sudo gdebi -n mendeley.deb
@@ -229,10 +246,10 @@ function LatexInstaller {
 function GitInstaller {
     cecho "${cyan}" "Installing Git"
     InstallThis git
-    URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | grep "browser_" | cut -d\" -f4 | $(which grep) "linux-amd64")
+    URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | $(which grep) "browser_" | cut -d\" -f4 | $(which grep) "linux-amd64")
     wget "${URL}" -O - | tar -zxf -
     cecho "${cyan}" "Installing Hub"
-    find . -name hub* -type d | while read -r DIR;do
+    find . -name "hub*" -type d | while read -r DIR;do
         sudo prefix=/usr/local "${DIR}"/install
     done
     rm -rf -- hub-linux*
@@ -370,7 +387,7 @@ function GitSetUp {
                 cecho "${cyan}" "Successfully generated GPG keys!"
                 echo
                 read -r -p 'Enter your GitHub username: ' GHUSERNAME
-                read -s -p 'Enter your GitHub password: ' GHPASSWORD
+                read -r -s -p 'Enter your GitHub password: ' GHPASSWORD
                 if ~/.venv/bin/python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
                     echo
                     cecho "${cyan}" "GitHub PGP-Key added successfully!"
@@ -458,6 +475,7 @@ function PackagesInstaller {
         lzip \
         openssh-server \
         ranger \
+        python-gpgme \
         rar \
         rsync \
         sed  \
@@ -482,6 +500,7 @@ function PackagesInstaller {
 
     ## Cloud
     MEGAInstaller
+    DropboxInstaller
 
     ### Chat / Video Conference
     SlackInstaller
@@ -492,6 +511,7 @@ function PackagesInstaller {
     ### Academic tools
     MendeleyInstaller
     LatexInstaller
+    InstallThis zotero-standalone
 
     ### File Manager
     InstallThis pantheon-files
