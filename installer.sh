@@ -45,18 +45,20 @@ echon() {
   return
 }
 
-cecho "${blue}" "Xubuntu Install Setup Script"
-cecho "${blue}" "Note: You need to be sudo before you continue"
-cecho "${blue}" "By Mpho Mphego"
-
 echon
-cecho "${red}" "###############################################"
-cecho "${red}" "#        DO NOT RUN THIS SCRIPT BLINDLY       #"
-cecho "${red}" "#         YOU'LL PROBABLY REGRET IT...        #"
-cecho "${red}" "#                                             #"
-cecho "${red}" "#              READ IT THOROUGHLY             #"
-cecho "${red}" "#         AND EDIT TO SUIT YOUR NEEDS         #"
-cecho "${red}" "###############################################"
+cecho "${red}" "###################################################"
+cecho "${red}" "#       [X]Ubuntu Install Setup Script            #"
+cecho "${red}" "#                                                 #"
+cecho "${red}" "#  Note: You need to be sudo before you continue  #"
+cecho "${red}" "#                                                 #"
+cecho "${red}" "#               By Mpho Mphego                    #"
+cecho "${red}" "#                                                 #"
+cecho "${red}" "#           DO NOT RUN THIS SCRIPT BLINDLY        #"
+cecho "${red}" "#              YOU'LL PROBABLY REGRET IT...       #"
+cecho "${red}" "#                                                 #"
+cecho "${red}" "#              READ IT THOROUGHLY                 #"
+cecho "${red}" "#         AND EDIT TO SUIT YOUR NEEDS             #"
+cecho "${red}" "###################################################"
 echon
 
 # Set continue to false by default.
@@ -86,18 +88,17 @@ sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 
-# Retries a command on failure.
-# $1 - the max number of attempts
-# $2... - the command to run
-function retry_cmd {
+retry_cmd() {
+    # Retries a command on failure.
+    # $1 - the max number of attempts
+    # $2... - the command to run
     local -r -i max_attempts="$1"; shift
     local -r cmd="$@"
     local -i attempt_num=1
 
     until $cmd
     do
-        if (( attempt_num == max_attempts ))
-        then
+        if (( attempt_num == max_attempts )); then
             echo "Attempt $attempt_num failed and there are no more attempts left!"
             return 1
         else
@@ -112,7 +113,7 @@ function retry_cmd {
 # Prerequisite: Update package source list #
 ############################################
 
-function InstallThis {
+InstallThis() {
     for pkg in "$@"; do
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${pkg}" || true;
         sudo dpkg --configure -a || true;
@@ -120,7 +121,7 @@ function InstallThis {
     done
 }
 
-function ReposInstaller {
+ReposInstaller() {
     cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
 
@@ -165,7 +166,7 @@ function ReposInstaller {
 }
 
 ## Install few global Python packages
-function PythonInstaller {
+PythonInstaller() {
     cecho "${cyan}" "Installing global Python packages..."
     if [ ! -f "pip-requirements.txt" ]; then
         wget https://raw.githubusercontent.com/mmphego/new-computer/master/pip-requirements.txt
@@ -179,20 +180,20 @@ function PythonInstaller {
     rm -rf pip-requirements.txt
 }
 
-function SlackInstaller {
+SlackInstaller() {
     cecho "${cyan}" "Installing Slack..."
     VERSION=3.3.7
     wget -O slack.deb "https://downloads.slack-edge.com/linux_releases/slack-desktop-${VERSION}-amd64.deb"
     sudo gdebi -n slack.deb
 }
 
-function MEGAInstaller {
+MEGAInstaller() {
     ID=$(grep ^VERSION_ID /etc/os-release | cut -d "=" -f2 | tr -d '"')
     wget "https://mega.nz/linux/MEGAsync/xUbuntu_${ID}/amd64/megasync-xUbuntu_${ID}_amd64.deb"
     sudo gdebi -n "megasync-xUbuntu_${ID}_amd64.deb"
 }
 
-function DropboxInstaller() {
+DropboxInstaller() {
     Version=$(curl -s https://linux.dropboxstatic.com/packages/ubuntu/ | $(which grep) -P '^(?=.*drop*)(?=.*amd64)' |  $(which grep) -oP '(?<=>).*(?=<)' | tail -1)
     wget "https://linux.dropboxstatic.com/packages/ubuntu/${Version}"
     sudo gdebi -n "${Version}"
@@ -201,18 +202,18 @@ function DropboxInstaller() {
     [[ "$(command -v nautilus)" > /dev/null ]] && InstallThis nautilus-dropbox || true
 }
 
-function MendeleyInstaller {
+MendeleyInstaller() {
     wget -O mendeley.deb https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
     sudo gdebi -n mendeley.deb
 }
 
-function AtomInstaller {
+AtomInstaller() {
     # Atom text editor
     wget -O atom.deb https://atom.io/download/deb
     sudo gdebi -n atom.deb
 }
 
-function xUbuntuPackages {
+xUbuntuPackages() {
     InstallThis xubuntu-icon-theme \
         xfce4-* \
         xscreensaver \
@@ -227,7 +228,7 @@ function xUbuntuPackages {
         xfdashboard-plugins
 }
 
-function LatexInstaller {
+LatexInstaller() {
     InstallThis chktex \
         latexmk \
         pandoc \
@@ -243,7 +244,7 @@ function LatexInstaller {
         texlive-xetex
 }
 
-function GitInstaller {
+GitInstaller() {
     cecho "${cyan}" "Installing Git"
     InstallThis git
     URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | $(which grep) "browser_" | cut -d\" -f4 | $(which grep) "linux-amd64")
@@ -255,12 +256,12 @@ function GitInstaller {
     rm -rf -- hub-linux*
 }
 
-function TravisClientInstaller {
+TravisClientInstaller() {
     cecho "${cyan}" "Installing Travis-CI CLI client."
     sudo gem install -n /usr/local/bin travis --no-rdoc --no-ri
 }
 
-function DELL_XPS_TWEAKS {
+DELL_XPS_TWEAKS() {
     echon
     cecho "${red}" "############################################################"
     cecho "${red}" "#                                                          #"
@@ -292,24 +293,24 @@ function DELL_XPS_TWEAKS {
 ##########################################
 ############# Package Set Up #############
 ##########################################
-function DockerSetUp {
+DockerSetUp() {
     cecho "${cyan}" "Setting up Docker..."
     sudo gpasswd -a  "$(users)" docker
     sudo usermod -a -G docker "$(users)"
 }
 
-function VSCodeSetUp {
+VSCodeSetUp() {
     cecho "${cyan}" "Installing VSCode plugins..."
     if [ ! -f "code_plugins.txt" ]; then
         wget https://raw.githubusercontent.com/mmphego/new-computer/master/code_plugins.txt
     fi
     while read -r pkg; do
-        retry_cmd 5 code --install-extension "${pkg}" --force
+        retry_cmd 5 code --install-extension "${pkg}" --force || true
     done < code_plugins.txt
     rm -rf code_plugins.txt
 }
 
-function ArduinoUDevFixes {
+ArduinoUDevFixes() {
     cecho "${cyan}" "Setting up UDev rules for platformio"
     cecho "${red}" "See: https://docs.platformio.org/en/latest/faq.html#id15"
     curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
@@ -318,7 +319,7 @@ function ArduinoUDevFixes {
     sudo usermod -a -G plugdev "${USER}"
 }
 
-function GitSetUp {
+GitSetUp() {
 
     if [[ -z "${TRAVIS}" ]]; then
         #############################################
@@ -407,7 +408,7 @@ function GitSetUp {
     fi
 }
 
-function installDotfiles {
+installDotfiles() {
     #############################################
     ### Install dotfiles repo
     #############################################
@@ -431,7 +432,7 @@ function installDotfiles {
 ##########################################
 ###### Simplified Package Installer ######
 ##########################################
-function PackagesInstaller {
+PackagesInstaller() {
 
     ### Compilers and GNU dependencies
     InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
@@ -531,7 +532,7 @@ function PackagesInstaller {
     cecho "${white}" "################################################################################"
 }
 
-function Cleanup {
+Cleanup() {
     echon
     cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
     echon
