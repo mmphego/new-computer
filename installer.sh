@@ -62,14 +62,14 @@ cecho "${red}" "###################################################"
 echon
 
 # Set continue to false by default.
-CONTINUE=false
+export CONTINUE=false
 
 if [[ -z "${TRAVIS}" ]]; then
     cecho "${red}" "Have you read through the script you're about to run and ";
     cechon "${red}" "understood that it will make changes to your computer? (y/n): ";
     read -r response
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        CONTINUE=true
+        export CONTINUE=true
         cecho "${blue}" "Please enter some info so that the script can automate the boring stuff."
         read -r -p 'Enter your full name: ' USERNAME
         read -r -p 'Enter your email address: ' USEREMAIL
@@ -79,7 +79,7 @@ if [[ -z "${TRAVIS}" ]]; then
     fi
 else
     cecho "${yellow}" "Running Continuous Integration.";
-    CONTINUE=true
+    export CONTINUE=true
 fi
 
 # Here we go.. ask for the administrator password upfront and run a
@@ -197,9 +197,13 @@ DropboxInstaller() {
     Version=$(curl -s https://linux.dropboxstatic.com/packages/ubuntu/ | $(which grep) -P '^(?=.*drop*)(?=.*amd64)' |  $(which grep) -oP '(?<=>).*(?=<)' | tail -1)
     wget "https://linux.dropboxstatic.com/packages/ubuntu/${Version}"
     sudo gdebi -n "${Version}"
-    [[ "$(command -v io.elementary.files)" > /dev/null ]] && InstallThis pantheon-files-plugin-dropbox || true
-    [[ "$(command -v thunar)" > /dev/null ]] && InstallThis thunar-dropbox-plugin || true
-    [[ "$(command -v nautilus)" > /dev/null ]] && InstallThis nautilus-dropbox || true
+    if [[ "$(command -v io.elementary.files)" > /dev/null ]]; then
+        InstallThis pantheon-files-plugin-dropbox
+    elif [[ "$(command -v thunar)" > /dev/null ]]; then
+        InstallThis thunar-dropbox-plugin
+    elif [[ "$(command -v nautilus)" > /dev/null ]]; then
+        InstallThis nautilus-dropbox
+    file
 }
 
 MendeleyInstaller() {
