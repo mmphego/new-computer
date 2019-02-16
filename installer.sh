@@ -203,7 +203,7 @@ DropboxInstaller() {
         InstallThis thunar-dropbox-plugin
     elif [[ "$(command -v nautilus)" > /dev/null ]]; then
         InstallThis nautilus-dropbox
-    file
+    fi
 }
 
 MendeleyInstaller() {
