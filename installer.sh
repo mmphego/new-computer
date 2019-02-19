@@ -10,7 +10,7 @@ set -e pipefail
 
 # Check if the script is running under Ubuntu 16.04 or Ubuntu 18.04
 if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ]; then
-    >&2 echo "This script is made for Ubuntu 18.04 or Ubuntu 16.04!"
+    >&2 echo "This script is made for Ubuntu 16.04 or Ubuntu 18.04!"
     exit 1
 fi
 
@@ -32,17 +32,14 @@ reset=$(tput sgr0)
 # arg $2 = message
 cecho() {
   echo "${1}${2}${reset}"
-  return
 }
 
 cechon() {
   echo -n "${1}${2}${reset}"
-  return
 }
 
 echon() {
   echo -e "\n"
-  return
 }
 
 echon
@@ -122,6 +119,22 @@ InstallThis() {
 }
 
 ReposInstaller() {
+
+    cecho "${green}" "Running package updates..."
+    sudo apt-get update -qq || true;
+    sudo dpkg --configure -a || true;
+    if ! command -v wget >/dev/null; then
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget < /dev/null > /dev/null
+    fi
+
+    if ! command -v curl > /dev/null; then
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq curl < /dev/null > /dev/null
+    fi
+
+    if ! command -v gdebi > /dev/null; then
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq gdebi < /dev/null > /dev/null
+    fi
+
     cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
 
@@ -294,9 +307,9 @@ DELL_XPS_TWEAKS() {
     fi
 }
 
-##########################################
-############# Package Set Up #############
-##########################################
+####################################################################################################
+########################################## Package Set Up ##########################################
+####################################################################################################
 DockerSetUp() {
     cecho "${cyan}" "Setting up Docker..."
     sudo gpasswd -a  "$(users)" docker
@@ -398,6 +411,7 @@ GitSetUp() {
                     cecho "${cyan}" "GitHub PGP-Key added successfully!"
                     git config --global commit.gpgsign true
                     git config --global user.signingkey "${MY_GPG_KEY}"
+                    echo "export GPG_TTY=$(tty)" >> ~/.bashrc
                     echo
                 else
                     cecho "${red}" "Something went wrong."
@@ -414,9 +428,9 @@ GitSetUp() {
 }
 
 installDotfiles() {
-    #############################################
-    ### Install dotfiles repo
-    #############################################
+    ################################################################################################
+    ###################################### Install dotfiles repo ###################################
+    ################################################################################################
     if [[ -z "${TRAVIS}" ]]; then
         cechon "${red}" "Do you want to clone and install dotfiles? (y/n): "
         read -r response
@@ -434,37 +448,82 @@ installDotfiles() {
     fi
 }
 
-##########################################
-###### Simplified Package Installer ######
-##########################################
-PackagesInstaller() {
+Cleanup() {
+    echon
+    cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
+    echon
+    sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
+    if [[ -z "${TRAVIS}" ]]; then
+        cechon "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)?: "
+        read -r response
+        if [ "$response" != "${response#[Yy]}" ] ;then
+            sudo apt-get -y --allow-unauthenticated upgrade && \
+            sudo apt-get clean && sudo apt-get autoclean && \
+            sudo apt-get autoremove
+        fi
+    fi
+    echon
+    cecho "${white}" "################################################################################"
+    echon
+    cecho "${cyan}" "Done!"
+    if [[ -z "${TRAVIS}" ]]; then
+        cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
+        cechon "${cyan}" "Please Reboot system! (y/n): "
+        read -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            sudo shutdown -r now
+        fi
+    fi
+}
 
+####################################################################################################
+#################################### Simplified Package Installer ##################################
+####################################################################################################
+main() {
+
+    ################################################################################################
     ### Compilers and GNU dependencies
+    ################################################################################################
     InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
 
+    ################################################################################################
     ### Library dependencies
+    ################################################################################################
     InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
         libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
         libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
 
+    ################################################################################################
     ### System and Security tools
+    ################################################################################################
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
         tlp tlpui
 
-    ### Network tools
+    # File Manager similar to that of MacOS
+    InstallThis pantheon-files
+
+    ################################################################################################
+    ######################################### Network tools ########################################
+    ################################################################################################
     InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
         gnome-calculator ethtool vnstat
 
-    ### Fun tools
+    ################################################################################################
+    ############################################ Fun tools #########################################
+    ################################################################################################
     InstallThis cowsay fortune-mod
 
-    # Packages for xUbuntu
+    ################################################################################################
+    ####################################### Packages for xUbuntu ###################################
+    ################################################################################################
     if [[ $(dpkg -l '*buntu-desktop' | grep ^ii | cut -f 3 -d ' ') == *"xubuntu"* ]]; then
         xUbuntuPackages
     fi
 
-    ### Productivity tools
+    ################################################################################################
+    ################################ Productivity tools ############################################
+    ################################################################################################
     InstallThis axel \
         bzip2 \
         chromium-browser \
@@ -496,35 +555,46 @@ PackagesInstaller() {
     GitInstaller
     TravisClientInstaller
 
-    # Python Packages
+    ################################################################################################
+    ######################################## Python Packages #######################################
+    ################################################################################################
     PythonInstaller
 
-    ### Dev Editors and tools
+    ################################################################################################
+    ######################################## Dev Editors and tools ################################
+    ################################################################################################
     InstallThis code
     InstallThis sublime-text
     AtomInstaller
 
-    ## Cloud
+    ################################################################################################
+    ########################################## Cloud Storage  ######################################
+    ################################################################################################
     MEGAInstaller
     DropboxInstaller
 
-    ### Chat / Video Conference
+    ################################################################################################
+    ########################################  Chat / Video Conference ##############################
+    ################################################################################################
     SlackInstaller
 
-    ### Music, Pictures and Video
+    ################################################################################################
+    ######################################## Music, Pictures and Video #############################
+    ################################################################################################
     InstallThis vlc youtube-dl simplescreenrecorder openshot-qt pinta
 
-    ### Academic tools
+    ################################################################################################
+    ######################################## Academic tools ########################################
+    ################################################################################################
     MendeleyInstaller
     LatexInstaller
     InstallThis zotero-standalone
+    # e-book reader https://babluboy.github.io/bookworm/
+    InstallThis com.github.babluboy.bookworm
 
-    ### File Manager
-    InstallThis pantheon-files
-
-    ####################
-    ### Setup
-    ####################
+    ################################################################################################
+    ############################################# Setup ############################################
+    ################################################################################################
     if command -v platformio >/dev/null ;then
         # Arduino hot fixes
         # See: https://docs.platformio.org/en/latest/faq.html#id15
@@ -537,45 +607,11 @@ PackagesInstaller() {
     cecho "${white}" "################################################################################"
 }
 
-Cleanup() {
-    echon
-    cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
-    echon
-    sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
-    if [[ -z "${TRAVIS}" ]]; then
-        cechon "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)?: "
-        read -r response
-        if [ "$response" != "${response#[Yy]}" ] ;then
-            sudo apt-get -y --allow-unauthenticated upgrade && \
-            sudo apt-get clean && sudo apt-get autoclean && \
-            sudo apt-get autoremove
-        fi
-    fi
-    echon
-    cecho "${white}" "################################################################################"
-    echon
-    cecho "${cyan}" "Done!"
-    if [[ -z "${TRAVIS}" ]]; then
-        cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
-        cechon "${cyan}" "Please Reboot system! (y/n): "
-        read -r response
-        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            sudo shutdown -r now
-        fi
-    fi
-}
-
 ########################################
 ########### THE SETUP ##################
 ########################################
-cecho "${green}" "Running package updates..."
-sudo apt-get update -qq || true;
-sudo dpkg --configure -a || true;
-cecho "${green}" "Installing wget curl and gdebi as requirements!"
-InstallThis wget curl gdebi
-
 ReposInstaller
-PackagesInstaller
+main
 installDotfiles
 if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
     DELL_XPS_TWEAKS
