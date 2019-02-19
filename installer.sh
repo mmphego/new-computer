@@ -397,6 +397,7 @@ GitSetUp() {
                     echo
                     cecho "${cyan}" "GitHub PGP-Key added successfully!"
                     git config --global commit.gpgsign true
+                    git config --global user.signingkey "${MY_GPG_KEY}"
                     echo
                 else
                     cecho "${red}" "Something went wrong."
