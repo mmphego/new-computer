@@ -14,6 +14,8 @@ if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ];
     exit 1
 fi
 
+# Setting up some vars
+export BIN_DIR="/usr/local/bin/"
 
 # Set the colours you can use
 # black=$(tput setaf 0)
@@ -262,15 +264,30 @@ LatexInstaller() {
 }
 
 GitInstaller() {
-    cecho "${cyan}" "Installing Git"
-    InstallThis git
+    if ! command -v git > /dev/null; then
+        cecho "${cyan}" "Installing Git"
+        InstallThis git
+    fi
     URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | $(command -v grep) "browser_" | cut -d\" -f4 | $(command -v grep) "linux-amd64")
     wget "${URL}" -O - | tar -zxf -
     cecho "${cyan}" "Installing Hub"
     find . -name "hub*" -type d | while read -r DIR;do
         sudo prefix=/usr/local "${DIR}"/install
+        rm -rf -- hub-linux* || true
     done
-    rm -rf -- hub-linux*
+}
+
+MDcatInstaller() {
+    cecho "${cyan}" "Installing mdcat: cat for Markdown"
+    URL=$(curl -s https://api.github.com/repos/lunaryorn/mdcat/releases | $(command -v grep) "browser_" | cut -d\" -f4 | $(command -v grep) "linux" | head -1)
+    wget "${URL}" -O - | tar -zxf -
+    find . -name "mdcat*" -type d | while read -r DIR;do
+        sudo cp ./mdcat-0.12.1-x86_64-unknown-linux-musl/mdcat "${BIN_DIR}"
+    done
+    if command -v mdcat > /dev/null; then
+        cecho "${GREEN}" "Successfully installed mdcat in ${BIN_DIR}"
+    fi
+    rm -rf -- mdcat* || true
 }
 
 TravisClientInstaller() {
@@ -286,7 +303,7 @@ DELL_XPS_TWEAKS() {
     cecho "${red}" "#       Ubuntu 18.04 run smooth on Dell XPS 15 9570        #"
     cecho "${red}" "#                                                          #"
     cecho "${red}" "#            DO NOT RUN THIS SCRIPT BLINDLY                #"
-    cecho "${red}" "#               YOU'LL PROBABLY REGRET IT...               #"
+    cecho "${red}" "#               YOU WILL PROBABLY REGRET IT...             #"
     cecho "${red}" "#                                                          #"
     cecho "${red}" "#               READ IT THOROUGHLY,                        #"
     cecho "${red}" "#               EDIT TO SUIT YOUR NEEDS AND,               #"
@@ -463,9 +480,7 @@ Cleanup() {
         fi
     fi
     echon
-    cecho "${white}" "################################################################################"
-    echon
-    cecho "${cyan}" "Done!"
+    cecho "${cyan}" "########################## Done Cleanup #####################################"
     if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
         cechon "${cyan}" "Please Reboot system! (y/n): "
@@ -558,7 +573,8 @@ main() {
 
     GitInstaller
     TravisClientInstaller
-
+    # cat for `Markdown`
+    MDcatInstaller
     ################################################################################################
     ######################################## Python Packages #######################################
     ################################################################################################
@@ -608,7 +624,7 @@ main() {
     DockerSetUp
     GitSetUp
 
-    cecho "${white}" "################################################################################"
+    cecho "${white}" "#################### Installation Complete ################################"
 }
 
 ########################################
