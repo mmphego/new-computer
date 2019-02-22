@@ -568,8 +568,11 @@ main() {
         sqlite3 \
         terminator \
         vim \
-        xz-utils \
-        nodejs
+        xz-utils
+
+    if ! command -v nodejs >/dev/null; then
+        InstallThis nodejs
+    fi
 
     GitInstaller
     TravisClientInstaller
