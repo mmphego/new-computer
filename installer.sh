@@ -207,7 +207,7 @@ MEGAInstaller() {
 }
 
 DropboxInstaller() {
-    Version=$(curl -s https://linux.dropboxstatic.com/packages/ubuntu/ | $(which grep) -P '^(?=.*drop*)(?=.*amd64)' |  $(which grep) -oP '(?<=>).*(?=<)' | tail -1)
+    Version=$(curl -s https://linux.dropboxstatic.com/packages/ubuntu/ | $(command -v grep) -P '^(?=.*drop*)(?=.*amd64)' |  $(command -v grep) -oP '(?<=>).*(?=<)' | tail -1)
     wget "https://linux.dropboxstatic.com/packages/ubuntu/${Version}"
     sudo gdebi -n "${Version}"
     if [[ "$(command -v io.elementary.files)" > /dev/null ]]; then
@@ -264,7 +264,7 @@ LatexInstaller() {
 GitInstaller() {
     cecho "${cyan}" "Installing Git"
     InstallThis git
-    URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | $(which grep) "browser_" | cut -d\" -f4 | $(which grep) "linux-amd64")
+    URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | $(command -v grep) "browser_" | cut -d\" -f4 | $(command -v grep) "linux-amd64")
     wget "${URL}" -O - | tar -zxf -
     cecho "${cyan}" "Installing Hub"
     find . -name "hub*" -type d | while read -r DIR;do
