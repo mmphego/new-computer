@@ -498,7 +498,7 @@ main() {
     ################################################################################################
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
-        tlp tlpui
+        tlp tlpui pydf
 
     # File Manager similar to that of MacOS
     InstallThis pantheon-files
