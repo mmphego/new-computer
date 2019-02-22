@@ -500,6 +500,11 @@ main() {
         software-properties-common apt-transport-https \
         tlp tlpui pydf
 
+    if [[ -z "${TRAVIS}" ]]; then
+        # VM tools
+        InstallThis virtualbox
+    fi
+
     # File Manager similar to that of MacOS
     InstallThis pantheon-files
 
@@ -548,7 +553,6 @@ main() {
         sqlite3 \
         terminator \
         vim \
-        virtualbox \
         xz-utils \
         nodejs
 
