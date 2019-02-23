@@ -174,8 +174,6 @@ ReposInstaller() {
     sudo add-apt-repository -y ppa:linuxuprising/apps || true
     sudo add-apt-repository -y ppa:linrunner/tlp || true
 
-    # elementary-os packages
-    sudo add-apt-repository -y ppa:elementary-os/stable || true
     sudo apt-get update -qq
     rm -rf -- *.gpg
 }
@@ -224,12 +222,6 @@ DropboxInstaller() {
 MendeleyInstaller() {
     wget -O mendeley.deb https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
     sudo gdebi -n mendeley.deb
-}
-
-AtomInstaller() {
-    # Atom text editor
-    wget -O atom.deb https://atom.io/download/deb
-    sudo gdebi -n atom.deb
 }
 
 xUbuntuPackages() {
@@ -294,6 +286,41 @@ TravisClientInstaller() {
     cecho "${cyan}" "Installing Travis-CI CLI client."
     sudo gem install -n /usr/local/bin travis --no-rdoc --no-ri
 }
+
+ElementaryOSDesktop() {
+
+        echon
+        cecho "${red}" "#############################################################"
+        cecho "${red}" "#                                                           #"
+        cecho "${red}" "#  elementary OS is a Linux distribution based on Ubuntu.   #"
+        cecho "${red}" "#  It is the flagship distribution to showcase the          #"
+        cecho "${red}" "#  Pantheon desktop environment.                            #"
+        cecho "${red}" "#  The distribution promotes itself as a fast, open,        #"
+        cecho "${red}" "#  and privacy-respecting replacement to macOS and Windows  #"
+        cecho "${red}" "#                                                           #"
+        cecho "${red}" "#                 https://elementary.io/                    #"
+        cecho "${red}" "#                                                           #"
+        cecho "${red}" "#             If you would like to try it out,              #"
+        cecho "${red}" "#               you can either install it now, or           #"
+        cecho "${red}" "#                  install it in your virtualbox            #"
+        cecho "${red}" "#                                                           #"
+        cecho "${red}" "#############################################################"
+        echon
+
+    if [[ -z "${TRAVIS}" ]]; then
+        cecho "${cyan}" "Would you like to install Elementary OS within your Ubuntu OS? (y/n)"
+        read -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+
+            # elementary-os packages
+            sudo add-apt-repository -y ppa:elementary-os/daily || true
+            sudo apt-get install -y elementary-desktop
+            cecho "${cyan}" "################### Enjoy Elementary OS ###################"
+        fi
+    fi
+
+}
+
 
 DELL_XPS_TWEAKS() {
     echon
@@ -499,47 +526,68 @@ main() {
     ################################################################################################
     ### Compilers and GNU dependencies
     ################################################################################################
-    InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
+    InstallThis autoconf \
+                automake \
+                clang \
+                dh-autoreconf \
+                g++ \
+                gcc \
+                gettext \
+                ruby \
+                ruby-dev
 
     ################################################################################################
     ### Library dependencies
     ################################################################################################
-    InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
-        libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
-        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
+    InstallThis lib1g-dev \
+                libcurl4-gnutls-dev \
+                libcurl4-openssl-dev \
+                libexpat1-dev \
+                libffi-dev \
+                libgtk2.0-0
+                libreadline-dev \
+                libsqlite3-dev \
+                libssl-dev \
+                libxml2-dev \
+                libxslt1-dev \
+                libyaml-dev z\
+                libz-dev \
 
     ################################################################################################
     ### System and Security tools
     ################################################################################################
-    InstallThis ca-certificates build-essential \
-        software-properties-common apt-transport-https \
-        tlp tlpui pydf
+    InstallThis ca-certificates \
+        apt-transport-https \
+        build-essential \
+        pydf \
+        software-properties-common \
+        tlp tlpui \
 
     if [[ -z "${TRAVIS}" ]]; then
         # VM tools
         InstallThis virtualbox
     fi
 
-    # File Manager similar to that of MacOS
-    InstallThis pantheon-files
-
     ################################################################################################
     ######################################### Network tools ########################################
     ################################################################################################
-    InstallThis autofs autossh bash-completion openssh-server sshfs evince gparted tree wicd \
-        gnome-calculator ethtool vnstat
+    InstallThis autofs \
+                autossh \
+                bash-completion \
+                ethtool \
+                evince \
+                gnome-calculator \
+                gparted \
+                openssh-server \
+                sshfs \
+                tree \
+                wicd \
+                vnstat
 
     ################################################################################################
     ############################################ Fun tools #########################################
     ################################################################################################
     InstallThis cowsay fortune-mod
-
-    ################################################################################################
-    ####################################### Packages for xUbuntu ###################################
-    ################################################################################################
-    if [[ $(dpkg -l '*buntu-desktop' | grep ^ii | cut -f 3 -d ' ') == *"xubuntu"* ]]; then
-        xUbuntuPackages
-    fi
 
     ################################################################################################
     ################################ Productivity tools ############################################
@@ -575,36 +623,49 @@ main() {
     TravisClientInstaller
     # cat for `Markdown`
     MDcatInstaller
+
     ################################################################################################
-    ######################################## Python Packages #######################################
+    ####################### Packages for xUbuntu/ Elementary OS  ###################################
+    ################################################################################################
+    if [[ $(dpkg -l '*buntu-desktop' | grep ^ii | cut -f 3 -d ' ') == *"xubuntu"* ]]; then
+        xUbuntuPackages
+    fi
+    ElementaryOSDesktop
+
+    ################################################################################################
+    ############################ Python Packages ###################################################
     ################################################################################################
     PythonInstaller
 
     ################################################################################################
-    ######################################## Dev Editors and tools ################################
+    ############################ Dev Editors and tools ############################################
     ################################################################################################
-    InstallThis code
-    InstallThis sublime-text
-    AtomInstaller
+    InstallThis atom \
+                code \
+                sublime-text
 
     ################################################################################################
-    ########################################## Cloud Storage  ######################################
+    ############################ Cloud Storage  ####################################################
     ################################################################################################
     MEGAInstaller
     DropboxInstaller
 
     ################################################################################################
-    ########################################  Chat / Video Conference ##############################
+    ############################# Chat / Video Conference ##########################################
     ################################################################################################
     SlackInstaller
 
     ################################################################################################
-    ######################################## Music, Pictures and Video #############################
+    ############################# Music, Pictures and Video ########################################
     ################################################################################################
-    InstallThis vlc youtube-dl simplescreenrecorder openshot-qt pinta
+    InstallThis vlc \
+        youtube-dl \
+        simplescreenrecorder \
+        openshot-qt \
+        pinta
 
     ################################################################################################
-    ######################################## Academic tools ########################################
+    ############################ Academic tools ####################################################
     ################################################################################################
     MendeleyInstaller
     LatexInstaller
@@ -613,7 +674,7 @@ main() {
     InstallThis com.github.babluboy.bookworm
 
     ################################################################################################
-    ############################################# Setup ############################################
+    ##################################### Setup ####################################################
     ################################################################################################
     if command -v platformio >/dev/null ;then
         # Arduino hot fixes
