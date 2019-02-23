@@ -547,15 +547,7 @@ main() {
     ################################################################################################
     ### Compilers and GNU dependencies
     ################################################################################################
-    InstallThis autoconf \
-                automake \
-                clang \
-                dh-autoreconf \
-                g++ \
-                gcc \
-                gettext \
-                ruby \
-                ruby-dev
+    InstallThis autoconf automake clang dh-autoreconf g++ gettext ruby ruby-dev
 
     ################################################################################################
     ### Library dependencies
