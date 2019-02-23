@@ -562,7 +562,6 @@ main() {
                 libexpat1-dev \
                 libffi-dev \
                 libgtk2.0-0
-                libreadline-dev \
                 libsqlite3-dev \
                 libssl-dev \
                 libxml2-dev \
