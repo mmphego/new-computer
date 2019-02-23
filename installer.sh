@@ -174,6 +174,10 @@ ReposInstaller() {
     sudo add-apt-repository -y ppa:linuxuprising/apps || true
     sudo add-apt-repository -y ppa:linrunner/tlp || true
 
+    ## etcher USB image writer
+    echo "deb https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
+    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 379CE192D401AB61 || true
+
     sudo apt-get update -qq
     rm -rf -- *.gpg
 }
@@ -578,6 +582,7 @@ main() {
         pydf \
         software-properties-common \
         tlp tlpui \
+        balena-etcher-electron
 
     if [[ -z "${TRAVIS}" ]]; then
         # VM tools
@@ -678,7 +683,8 @@ main() {
         youtube-dl \
         simplescreenrecorder \
         openshot-qt \
-        pinta
+        pinta \
+        guvcview
 
     ################################################################################################
     ############################ Academic tools ####################################################
