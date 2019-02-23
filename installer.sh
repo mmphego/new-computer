@@ -126,15 +126,15 @@ ReposInstaller() {
     sudo apt-get update -qq || true;
     sudo dpkg --configure -a || true;
     if ! command -v wget >/dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget < /dev/null > /dev/null
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget < /dev/null > /dev/null || true
     fi
 
     if ! command -v curl > /dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq curl < /dev/null > /dev/null
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq curl < /dev/null > /dev/null || true
     fi
 
     if ! command -v gdebi > /dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq gdebi < /dev/null > /dev/null
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq gdebi < /dev/null > /dev/null || true
     fi
 
     cecho "${green}" "Adding APT Repositories."
@@ -318,7 +318,7 @@ ElementaryOSDesktop() {
 
             # elementary-os packages
             sudo add-apt-repository -y ppa:elementary-os/daily || true
-            sudo apt-get install -y elementary-desktop
+            sudo apt-get install -y elementary-desktop || true
             cecho "${cyan}" "################### Enjoy Elementary OS ###################"
         fi
     fi
