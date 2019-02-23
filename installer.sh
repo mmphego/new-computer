@@ -418,7 +418,9 @@ GitSetUp() {
             read -r -p 'Enter your GitHub username: ' GHUSERNAME
             gh_retcode=$(curl -o /dev/null -s -w "%{http_code}" -u "${GHUSERNAME}" --data "${GHDATA}" https://api.github.com/user/keys)
             if [[ "${gh_retcode}" -ge 201 ]]; then
-                cecho "${cyan}" "GitHub ssh-key added successfully!"
+                cecho "${cyan}" "####################################################"
+                cecho "${cyan}" "GitHub SSH keys added successfully!"
+                cecho "${cyan}" "####################################################"
                 echo
             else
                 cecho "${red}" "Something went wrong."
@@ -428,8 +430,8 @@ GitSetUp() {
             fi
         fi
 
-        cecho "${white}" "##############################################"
-        cecho "${green}" "Add GPG-keys to GitHub (via api.github.com)..."
+        echo
+        cecho "${green}" "Adding GPG-keys to GitHub (via api.github.com)..."
         echo
         cecho "${red}" "This will require you to login GitHub's API with your username and password "
         cechon "${red}" "Enter Y/N to continue: "
@@ -452,11 +454,13 @@ GitSetUp() {
                 read -r -s -p 'Enter your GitHub password: ' GHPASSWORD
                 if ~/.venv/bin/python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
                     echo
-                    cecho "${cyan}" "GitHub PGP-Key added successfully!"
                     git config --global commit.gpgsign true
                     git config --global user.signingkey "${MY_GPG_KEY}"
                     echo "export GPG_TTY=$(tty)" >> ~/.bashrc
                     echo
+                    cecho "${cyan}" "####################################################"
+                    cecho "${cyan}" "GitHub PGP-Keys added successfully!"
+                    cecho "${cyan}" "####################################################"
                 else
                     cecho "${red}" "Something went wrong."
                     cecho "${red}" "You will need to do it manually."
@@ -468,6 +472,19 @@ GitSetUp() {
             fi
             rm -rf gpg_keys.txt || true;
         fi
+
+        echo
+        cecho "${green}" "Installing Git hooks..."
+        echo
+        cecho "${red}" "Would you like to install custom pre-commit git-hooks? (y/n)"
+        read -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            wget https://github.com/mmphego/git-hooks/archive/master.zip -P /tmp && \
+            unzip /tmp/master.zip -d /tmp
+            [ -f /tmp/git-hooks-master/setup_hooks.sh ] && \
+            sudo /tmp/git-hooks-master/setup_hooks.sh install_hooks
+        fi
+
     fi
 }
 
@@ -506,8 +523,8 @@ Cleanup() {
             sudo apt-get autoremove
         fi
     fi
-    echon
     cecho "${cyan}" "########################## Done Cleanup #####################################"
+    echon
     if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
         cechon "${cyan}" "Please Reboot system! (y/n): "
@@ -685,7 +702,7 @@ main() {
     DockerSetUp
     GitSetUp
 
-    cecho "${white}" "#################### Installation Complete ################################"
+    cecho "${cyan}" "#################### Installation Complete ################################"
 }
 
 ########################################
