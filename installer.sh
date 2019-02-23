@@ -560,8 +560,8 @@ main() {
     ################################################################################################
     ### Library dependencies
     ################################################################################################
-    InstallThis lib1g-dev libcurl4-gnutls-dev libcurl4-openssl-dev libexpat1-dev libffi-dev \
-                libgtk2.0-libsqlite3-dev libssl-dev libxml2-dev libxslt1-dev libyaml-dev zlibz-dev
+    # InstallThis lib1g-dev libcurl4-gnutls-dev libcurl4-openssl-dev libexpat1-dev libffi-dev \
+    #             libgtk2.0-libsqlite3-dev libssl-dev libxml2-dev libxslt1-dev libyaml-dev zlibz-dev
 
     #####################################################################################
     ### System and Security tools
