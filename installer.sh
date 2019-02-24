@@ -109,7 +109,7 @@ retry_cmd() {
 
 Recv_GPG_Keys() {
     if ! command -v gpg > /dev/null; then
-        sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys "$1" || true
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$1" || true
     else
         gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$1" || true;
     fi
