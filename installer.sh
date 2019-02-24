@@ -120,21 +120,25 @@ InstallThis() {
     done
 }
 
+InstallThisQuietly() {
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "$1" < /dev/null > /dev/null || true
+}
+
 ReposInstaller() {
 
     cecho "${green}" "Running package updates..."
     sudo apt-get update -qq || true;
-    # sudo dpkg --configure -a || true;
-    # if ! command -v wget >/dev/null; then
-    #     sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget < /dev/null > /dev/null || true
-    # fi
+    sudo dpkg --configure -a || true;
+    if ! command -v wget >/dev/null; then
+        InstallThisQuietly wget
+    fi
 
-    # if ! command -v curl > /dev/null; then
-    #     sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq curl < /dev/null > /dev/null || true
-    # fi
+    if ! command -v curl > /dev/null; then
+        InstallThisQuietly curl
+    fi
 
     if ! command -v gdebi > /dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq gdebi < /dev/null > /dev/null || true
+        InstallThisQuietly gdebi
     fi
 
     cecho "${green}" "Adding APT Repositories."
