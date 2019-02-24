@@ -324,7 +324,7 @@ ElementaryOSDesktop() {
         echon
 
     if [[ -z "${TRAVIS}" ]]; then
-        cecho "${cyan}" "Would you like to install Elementary OS within your Ubuntu OS? (y/n)"
+        cechon "${cyan}" "Would you like to install Elementary OS within your Ubuntu OS? (y/n): "
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
