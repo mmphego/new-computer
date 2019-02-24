@@ -696,7 +696,7 @@ main() {
 ########### THE SETUP ##################
 ########################################
 ReposInstaller
-main
+# main
 installDotfiles
 if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
     DELL_XPS_TWEAKS
