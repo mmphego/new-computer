@@ -120,21 +120,25 @@ InstallThis() {
     done
 }
 
+InstallThisQuietly() {
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "$1" < /dev/null > /dev/null || true
+}
+
 ReposInstaller() {
 
     cecho "${green}" "Running package updates..."
     sudo apt-get update -qq || true;
     sudo dpkg --configure -a || true;
     if ! command -v wget >/dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget < /dev/null > /dev/null
+        InstallThisQuietly wget
     fi
 
     if ! command -v curl > /dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq curl < /dev/null > /dev/null
+        InstallThisQuietly curl
     fi
 
     if ! command -v gdebi > /dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq gdebi < /dev/null > /dev/null
+        InstallThisQuietly gdebi
     fi
 
     cecho "${green}" "Adding APT Repositories."
@@ -174,8 +178,13 @@ ReposInstaller() {
     sudo add-apt-repository -y ppa:linuxuprising/apps || true
     sudo add-apt-repository -y ppa:linrunner/tlp || true
 
+    ## etcher USB image writer
+    echo "deb https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
+    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 379CE192D401AB61 || true
+
     sudo apt-get update -qq
     rm -rf -- *.gpg
+    cecho "${cyan}" "################### Done Adding Repositories ###################"
 }
 
 ## Install few global Python packages
@@ -314,7 +323,7 @@ ElementaryOSDesktop() {
 
             # elementary-os packages
             sudo add-apt-repository -y ppa:elementary-os/daily || true
-            sudo apt-get install -y elementary-desktop
+            sudo apt-get install -y elementary-desktop || true
             cecho "${cyan}" "################### Enjoy Elementary OS ###################"
         fi
     fi
@@ -418,7 +427,9 @@ GitSetUp() {
             read -r -p 'Enter your GitHub username: ' GHUSERNAME
             gh_retcode=$(curl -o /dev/null -s -w "%{http_code}" -u "${GHUSERNAME}" --data "${GHDATA}" https://api.github.com/user/keys)
             if [[ "${gh_retcode}" -ge 201 ]]; then
-                cecho "${cyan}" "GitHub ssh-key added successfully!"
+                cecho "${cyan}" "####################################################"
+                cecho "${cyan}" "GitHub SSH keys added successfully!"
+                cecho "${cyan}" "####################################################"
                 echo
             else
                 cecho "${red}" "Something went wrong."
@@ -428,8 +439,8 @@ GitSetUp() {
             fi
         fi
 
-        cecho "${white}" "##############################################"
-        cecho "${green}" "Add GPG-keys to GitHub (via api.github.com)..."
+        echo
+        cecho "${green}" "Adding GPG-keys to GitHub (via api.github.com)..."
         echo
         cecho "${red}" "This will require you to login GitHub's API with your username and password "
         cechon "${red}" "Enter Y/N to continue: "
@@ -452,11 +463,13 @@ GitSetUp() {
                 read -r -s -p 'Enter your GitHub password: ' GHPASSWORD
                 if ~/.venv/bin/python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
                     echo
-                    cecho "${cyan}" "GitHub PGP-Key added successfully!"
                     git config --global commit.gpgsign true
                     git config --global user.signingkey "${MY_GPG_KEY}"
                     echo "export GPG_TTY=$(tty)" >> ~/.bashrc
                     echo
+                    cecho "${cyan}" "####################################################"
+                    cecho "${cyan}" "GitHub PGP-Keys added successfully!"
+                    cecho "${cyan}" "####################################################"
                 else
                     cecho "${red}" "Something went wrong."
                     cecho "${red}" "You will need to do it manually."
@@ -468,6 +481,19 @@ GitSetUp() {
             fi
             rm -rf gpg_keys.txt || true;
         fi
+
+        echo
+        cecho "${green}" "Installing Git hooks..."
+        echo
+        cecho "${red}" "Would you like to install custom pre-commit git-hooks? (y/n)"
+        read -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            wget https://github.com/mmphego/git-hooks/archive/master.zip -P /tmp && \
+            unzip /tmp/master.zip -d /tmp
+            [ -f /tmp/git-hooks-master/setup_hooks.sh ] && \
+            sudo /tmp/git-hooks-master/setup_hooks.sh install_hooks
+        fi
+
     fi
 }
 
@@ -506,8 +532,8 @@ Cleanup() {
             sudo apt-get autoremove
         fi
     fi
-    echon
     cecho "${cyan}" "########################## Done Cleanup #####################################"
+    echon
     if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
         cechon "${cyan}" "Please Reboot system! (y/n): "
@@ -523,54 +549,37 @@ Cleanup() {
 ####################################################################################################
 main() {
 
-    ################################################################################################
-    ### Compilers and GNU dependencies
-    ################################################################################################
-    InstallThis autoconf \
-                automake \
-                clang \
-                dh-autoreconf \
-                g++ \
-                gcc \
-                gettext \
-                ruby \
-                ruby-dev
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "################################# Compilers and GNU dependencies ###############################"
+    cecho "${blue}" "################################################################################################"
 
-    ################################################################################################
-    ### Library dependencies
-    ################################################################################################
-    InstallThis lib1g-dev \
-                libcurl4-gnutls-dev \
-                libcurl4-openssl-dev \
-                libexpat1-dev \
-                libffi-dev \
-                libgtk2.0-0
-                libreadline-dev \
-                libsqlite3-dev \
-                libssl-dev \
-                libxml2-dev \
-                libxslt1-dev \
-                libyaml-dev z\
-                libz-dev \
+    InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
 
-    ################################################################################################
-    ### System and Security tools
-    ################################################################################################
-    InstallThis ca-certificates \
-        apt-transport-https \
-        build-essential \
-        pydf \
-        software-properties-common \
-        tlp tlpui \
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "######################################### Library dependencies ##################################"
+    cecho "${blue}" "################################################################################################"
+
+    InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
+        libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
+        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
+
+    cecho "#{blue}" "#################################################################################################"
+    cecho "#{blue}" "################################# System and Security tools #####################################"
+    cecho "#{blue}" "#################################################################################################"
+
+    InstallThis ca-certificates build-essential \
+        software-properties-common apt-transport-https \
+        tlp tlpui pydf balena-etcher-electron
 
     if [[ -z "${TRAVIS}" ]]; then
         # VM tools
         InstallThis virtualbox
     fi
 
-    ################################################################################################
-    ######################################### Network tools ########################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "######################################### Network tools ########################################"
+    cecho "${blue}" "################################################################################################"
+
     InstallThis autofs \
                 autossh \
                 bash-completion \
@@ -584,14 +593,16 @@ main() {
                 wicd \
                 vnstat
 
-    ################################################################################################
-    ############################################ Fun tools #########################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "############################################ Fun tools #########################################"
+    cecho "${blue}" "################################################################################################"
+
     InstallThis cowsay fortune-mod
 
-    ################################################################################################
-    ################################ Productivity tools ############################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "################################ Productivity tools ############################################"
+    cecho "${blue}" "################################################################################################"
+
     InstallThis axel \
         bzip2 \
         chromium-browser \
@@ -624,58 +635,67 @@ main() {
     # cat for `Markdown`
     MDcatInstaller
 
-    ################################################################################################
-    ####################### Packages for xUbuntu/ Elementary OS  ###################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "####################### Packages for xUbuntu/ Elementary OS  ###################################"
+    cecho "${blue}" "################################################################################################"
+
     if [[ $(dpkg -l '*buntu-desktop' | grep ^ii | cut -f 3 -d ' ') == *"xubuntu"* ]]; then
         xUbuntuPackages
     fi
     ElementaryOSDesktop
 
-    ################################################################################################
-    ############################ Python Packages ###################################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "############################ Python Packages ###################################################"
+    cecho "${blue}" "################################################################################################"
+
     PythonInstaller
 
-    ################################################################################################
-    ############################ Dev Editors and tools ############################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "############################ Dev Editors and tools ############################################"
+    cecho "${blue}" "################################################################################################"
+
     InstallThis atom \
                 code \
                 sublime-text
 
-    ################################################################################################
-    ############################ Cloud Storage  ####################################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "############################ Cloud Storage  ####################################################"
+    cecho "${blue}" "################################################################################################"
+
     MEGAInstaller
     DropboxInstaller
 
-    ################################################################################################
-    ############################# Chat / Video Conference ##########################################
-    ################################################################################################
-    SlackInstaller
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "############################# Chat / Video Conference ##########################################"
+    cecho "${blue}" "################################################################################################"
 
-    ################################################################################################
-    ############################# Music, Pictures and Video ########################################
-    ################################################################################################
+    SlackInstaller
+    InstallThis guvcview
+
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "############################# Music, Pictures and Video ########################################"
+    cecho "${blue}" "################################################################################################"
+
     InstallThis vlc \
         youtube-dl \
         simplescreenrecorder \
         openshot-qt \
         pinta
 
-    ################################################################################################
-    ############################ Academic tools ####################################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "############################ Academic tools ####################################################"
+    cecho "${blue}" "################################################################################################"
+
     MendeleyInstaller
     LatexInstaller
     InstallThis zotero-standalone
     # e-book reader https://babluboy.github.io/bookworm/
     InstallThis com.github.babluboy.bookworm
 
-    ################################################################################################
-    ##################################### Setup ####################################################
-    ################################################################################################
+    cecho "${blue}" "################################################################################################"
+    cecho "${blue}" "##################################### Setup ####################################################"
+    cecho "${blue}" "################################################################################################"
+
     if command -v platformio >/dev/null ;then
         # Arduino hot fixes
         # See: https://docs.platformio.org/en/latest/faq.html#id15
@@ -685,7 +705,7 @@ main() {
     DockerSetUp
     GitSetUp
 
-    cecho "${white}" "#################### Installation Complete ################################"
+    cecho "${cyan}" "#################### Installation Complete ################################"
 }
 
 ########################################
