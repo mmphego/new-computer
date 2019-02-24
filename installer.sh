@@ -124,14 +124,14 @@ ReposInstaller() {
 
     cecho "${green}" "Running package updates..."
     sudo apt-get update -qq || true;
-    sudo dpkg --configure -a || true;
-    if ! command -v wget >/dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget < /dev/null > /dev/null || true
-    fi
+    # sudo dpkg --configure -a || true;
+    # if ! command -v wget >/dev/null; then
+    #     sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq wget < /dev/null > /dev/null || true
+    # fi
 
-    if ! command -v curl > /dev/null; then
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq curl < /dev/null > /dev/null || true
-    fi
+    # if ! command -v curl > /dev/null; then
+    #     sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq curl < /dev/null > /dev/null || true
+    # fi
 
     if ! command -v gdebi > /dev/null; then
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq gdebi < /dev/null > /dev/null || true
@@ -180,6 +180,7 @@ ReposInstaller() {
 
     sudo apt-get update -qq
     rm -rf -- *.gpg
+    cecho "${cyan}" "################### Done Adding Repositories ###################"
 }
 
 ## Install few global Python packages
@@ -547,6 +548,7 @@ main() {
     cecho "${blue}" "################################################################################################"
     cecho "${blue}" "### Compilers and GNU dependencies"
     cecho "${blue}" "################################################################################################"
+
     InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
 
     cecho "${blue}" "################################################################################################"
