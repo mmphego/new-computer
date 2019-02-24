@@ -107,6 +107,13 @@ retry_cmd() {
     done
 }
 
+Recv_GPG_Keys() {
+    if ! command -v gpg > /dev/null; then
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$1" || true
+    else
+        gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$1" || true;
+    fi
+}
 
 ############################################
 # Prerequisite: Update package source list #
@@ -153,7 +160,7 @@ ReposInstaller() {
 
     # Dropbox
     [ -z "${Version}" ] || echo "deb [trusted=yes] http://linux.dropbox.com/ubuntu ${Version} main" | sudo tee /etc/apt/sources.list.d/dropbox.list
-    sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E || true
+    Recv_GPG_Keys 5044912E || true
 
     # Zotero stand-alone
     sudo add-apt-repository -y ppa:smathot/cogscinl
@@ -179,8 +186,8 @@ ReposInstaller() {
     sudo add-apt-repository -y ppa:linrunner/tlp || true
 
     ## etcher USB image writer
-    echo "deb https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
-    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 379CE192D401AB61 || true
+    echo "deb [trusted=yes] https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
+    Recv_GPG_Keys 379CE192D401AB61
 
     sudo apt-get update -qq
     rm -rf -- *.gpg
