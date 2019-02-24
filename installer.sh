@@ -547,24 +547,21 @@ main() {
     ################################################################################################
     ### Compilers and GNU dependencies
     ################################################################################################
-    # InstallThis autoconf automake clang dh-autoreconf g++ gettext ruby ruby-dev
+    InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
 
     ################################################################################################
     ### Library dependencies
     ################################################################################################
-    # InstallThis lib1g-dev libcurl4-gnutls-dev libcurl4-openssl-dev libexpat1-dev libffi-dev \
-    #             libgtk2.0-libsqlite3-dev libssl-dev libxml2-dev libxslt1-dev libyaml-dev zlibz-dev
+    InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
+        libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
+        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
 
-    #####################################################################################
+    ################################################################################################
     ### System and Security tools
     ################################################################################################
-    InstallThis ca-certificates \
-        apt-transport-https \
-        build-essential \
-        pydf \
-        software-properties-common \
-        tlp tlpui \
-        balena-etcher-electron
+    InstallThis ca-certificates build-essential \
+        software-properties-common apt-transport-https \
+        tlp tlpui pydf balena-etcher-electron
 
     if [[ -z "${TRAVIS}" ]]; then
         # VM tools
