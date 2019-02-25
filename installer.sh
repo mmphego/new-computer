@@ -337,32 +337,31 @@ ElementaryOSDesktop() {
 
 }
 
-
 DELL_XPS_TWEAKS() {
     echon
-    cecho "${red}" "############################################################"
-    cecho "${red}" "#                                                          #"
-    cecho "${red}" "#       A collection of scripts and tweaks to make         #"
-    cecho "${red}" "#       Ubuntu 18.04 run smooth on Dell XPS 15 9570        #"
-    cecho "${red}" "#                                                          #"
-    cecho "${red}" "#            DO NOT RUN THIS SCRIPT BLINDLY                #"
-    cecho "${red}" "#               YOU WILL PROBABLY REGRET IT...             #"
-    cecho "${red}" "#                                                          #"
-    cecho "${red}" "#               READ IT THOROUGHLY,                        #"
-    cecho "${red}" "#               EDIT TO SUIT YOUR NEEDS AND,               #"
-    cecho "${red}" "#               GO VIEW THE SCRIPT HERE!                   #"
-    cecho "${red}" "#                                                          #"
-    cecho "${red}" "#   https://github.com/mmphego/dell-xps-9570-ubuntu-respin #"
-    cecho "${red}" "#                                                          #"
-    cecho "${red}" "############################################################"
+    cecho "${red}" "################################################################"
+    cecho "${red}" "#                                                              #"
+    cecho "${red}" "#       A collection of scripts and tweaks to make             #"
+    cecho "${red}" "#       Ubuntu 18.04 run smooth on Dell XPS 15 9570            #"
+    cecho "${red}" "#                                                              #"
+    cecho "${red}" "#            DO NOT RUN THIS SCRIPT BLINDLY                    #"
+    cecho "${red}" "#               YOU WILL PROBABLY REGRET IT...                 #"
+    cecho "${red}" "#                                                              #"
+    cecho "${red}" "#               READ IT THOROUGHLY,                            #"
+    cecho "${red}" "#               EDIT TO SUIT YOUR NEEDS AND,                   #"
+    cecho "${red}" "#               GO VIEW THE SCRIPT HERE!                       #"
+    cecho "${red}" "#                                                              #"
+    cecho "${red}" "#   https://github.com/JackHack96/dell-xps-9570-ubuntu-respin  #"
+    cecho "${red}" "#                                                              #"
+    cecho "${red}" "################################################################"
     echon
 
     if [[ -z "${TRAVIS}" ]]; then
         cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
-        cechon "${red}" "Do you want to proceed with tweaking your Dell XPS? (y/n): "
+        cechon "${red}" "Do you want to proceed with tweaking your Dell XPS 15 9570? (y/n): "
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            bash -c "$(curl -fsSL https://raw.githubusercontent.com/mmphego/dell-xps-9570-ubuntu-respin/master/xps-tweaks.sh)"
+            sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/dell-xps-9570-ubuntu-respin/master/xps-tweaks.sh)"
         fi
     fi
 }

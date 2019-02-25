@@ -5,7 +5,7 @@
 [![LICENCE](https://img.shields.io/github/license/mmphego/new-computer.svg?style=plastic)](https://github.com/mmphego/new-computer/blob/master/LICENSE)
 
 My personal system set-up script which installs most of the packages I need on a daily basis after a fresh [X]Ubuntu system install.
-- Added [support for tweaking Dell XPS 15](http://github.com/mmphego/dell-xps-9570-ubuntu-respin/)
+- Added [support for tweaking Dell XPS 15](https://github.com/JackHack96/dell-xps-9570-ubuntu-respin)
 - Dotfiles installation
 - GitHub GPG and SSH keys installation
 
@@ -24,7 +24,7 @@ Here are some of the things that gets set up:
 - Supports for Arduino/IoT development using [Platfomio](https://platformio.org/) library intergrated on VScode and Atom.
 - Installs [Slack](https://slack.com) for colabs, [Megasync](https://mega.nz) and [Dropbox](https://www.dropbox.com/) for cloud storage.
 - Installs Academic tools such as [Latex](https://www.latex-project.org/get/) including extras,  [Mendeley](https://www.mendeley.com) for research management and, [Zotero](https://www.zotero.org/) for reference management.
-- Installs [a collection of scripts and tweaks to make [X]Ubuntu 18.04 run smooth on Dell XPS 15 9570 ](https://github.com/mmphego/dell-xps-9570-ubuntu-respin), if you are running a [Dell XPS 15](https://www.dell.com/en-us/shop/dell-laptops/xps-15/spd/xps-15-9570-laptop)
+- Installs [a collection of scripts and tweaks to make [X]Ubuntu 18.04 run smooth on Dell XPS 15 9570 ](https://github.com/JackHack96/dell-xps-9570-ubuntu-respin), if you are running a [Dell XPS 15](https://www.dell.com/en-us/shop/dell-laptops/xps-15/spd/xps-15-9570-laptop)
   - [Credit:@JackHack96](https://github.com/JackHack96)
 - Installs [my dotfiles](https://github.com/mmphego/dot-files) and [my githooks](https://github.com/mmphego/git-hooks)
 - Installs an additional desktop environment: [elementaryOS](https://elementary.io/)
