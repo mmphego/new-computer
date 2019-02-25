@@ -337,6 +337,18 @@ ElementaryOSDesktop() {
 
 }
 
+UbuntuOSDesktop() {
+    if [[ -z "${TRAVIS}" ]]; then
+        cechon "${cyan}" "Would you like to install Ubuntu OS desktop within your [X]Ubuntu OS? (y/n): "
+        read -r response
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            # Ubuntu Desktop Env packages
+            sudo apt-get install -y ubuntu-desktop || true
+            cecho "${cyan}" "################### Enjoy Ubuntu Desktop ###################"
+        fi
+    fi
+}
+
 DELL_XPS_TWEAKS() {
     echon
     cecho "${red}" "################################################################"
@@ -647,6 +659,7 @@ main() {
 
     if [[ $(dpkg -l '*buntu-desktop' | grep ^ii | cut -f 3 -d ' ') == *"xubuntu"* ]]; then
         xUbuntuPackages
+        UbuntuOSDesktop
     fi
     ElementaryOSDesktop
 
