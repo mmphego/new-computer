@@ -500,7 +500,7 @@ GitSetUp() {
             [ -f /tmp/git-hooks-master/setup_hooks.sh ] && \
             sudo /tmp/git-hooks-master/setup_hooks.sh install_hooks
         fi
-
+        echo
     fi
 }
 
