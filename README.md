@@ -19,7 +19,6 @@ bash -c "$(curl -L https://git.io/runme)"
 Here are some of the things that gets set up:
 - Installs [Git](https://github.com/git/git)+[Hub](http://github.com/github/hub/) and configures your [GPG](https://help.github.com/articles/generating-a-new-gpg-key/) and [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) keys via [api.github.com](api.github.com)
 - Installs [Travis-CI](https://github.com/travis-ci/travis.rb) ruby based CLI client for managing Travis builds.
-- Installs [pantheon-files](https://youtu.be/b3cI7ekyEMM) files manager similar to MacOS file manager
 - Installs Python3.7 and [few modules](pip-requirements.txt) and [Docker](https://www.docker.com/) and configures Docker to work without `sudo` .
 - Installs 3 text editors/IDE namely:  [VSCode](https://code.visualstudio.com) including [plugins](code_plugins.txt), [Sublime-Text](www.sublimetext.com/3) and [Atom](https://atom.io/).
 - Supports for Arduino/IoT development using [Platfomio](https://platformio.org/) library intergrated on VScode and Atom.
