@@ -276,8 +276,8 @@ GitInstaller() {
         cecho "${cyan}" "Installing Git"
         InstallThis git
     fi
-    URL=$(curl -s https://api.github.com/repos/github/hub/releases/latest | $(command -v grep) "browser_" | cut -d\" -f4 | $(command -v grep) "linux-amd64")
-    wget "${URL}" -O - | tar -zxf -
+    URL=$(curl -s "https://api.github.com/repos/github/hub/releases/latest" | $(command -v grep) "browser_" | cut -d\" -f4 | $(command -v grep) "linux-amd64") || true
+    wget "${URL}" -O - | tar -zxf - || true
     cecho "${cyan}" "Installing Hub"
     find . -name "hub*" -type d | while read -r DIR;do
         sudo prefix=/usr/local "${DIR}"/install
@@ -287,11 +287,11 @@ GitInstaller() {
 
 MDcatInstaller() {
     cecho "${cyan}" "Installing mdcat: cat for Markdown"
-    URL=$(curl -s https://api.github.com/repos/lunaryorn/mdcat/releases | $(command -v grep) "browser_" | cut -d\" -f4 | $(command -v grep) "linux" | head -1)
-    wget "${URL}" -O - | tar -zxf -
+    URL=$(curl -s "https://api.github.com/repos/lunaryorn/mdcat/releases" | $(command -v grep) "browser_" | cut -d\" -f4 | $(command -v grep) "linux" | head -1)
+    wget "${URL}" -O - | tar -zxf - || true
     find . -name "mdcat*" -type d | while read -r DIR;do
         sudo cp ./mdcat-0.12.1-x86_64-unknown-linux-musl/mdcat "${BIN_DIR}"
-    done
+    done || true
     if command -v mdcat > /dev/null; then
         cecho "${GREEN}" "Successfully installed mdcat in ${BIN_DIR}"
     fi
