@@ -25,7 +25,7 @@ yellow=$(tput setaf 3)
 blue=$(tput setaf 4)
 # magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
-white=$(tput setaf 7)
+# white=$(tput setaf 7)
 # Resets the style
 reset=$(tput sgr0)
 
@@ -207,6 +207,8 @@ PythonInstaller() {
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
     sudo pip install virtualenv
     virtualenv ~/.venv
+
+    # shellcheck source=/dev/null
     source ~/.venv/bin/activate
     pip install -U -r pip-requirements.txt
     rm -rf pip-requirements.txt
@@ -296,7 +298,7 @@ MDcatInstaller() {
         sudo cp ./mdcat-0.12.1-x86_64-unknown-linux-musl/mdcat "${BIN_DIR}"
     done || true
     if command -v mdcat > /dev/null; then
-        cecho "${GREEN}" "Successfully installed mdcat in ${BIN_DIR}"
+        cecho "${green}" "Successfully installed mdcat in ${BIN_DIR}"
     fi
     rm -rf -- mdcat* || true
 }
@@ -509,10 +511,10 @@ GitSetUp() {
         cecho "${red}" "Would you like to install custom pre-commit git-hooks? (y/n)"
         read -r response
         if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            wget https://github.com/mmphego/git-hooks/archive/master.zip -P /tmp && \
-            unzip /tmp/master.zip -d /tmp
-            [ -f /tmp/git-hooks-master/setup_hooks.sh ] && \
-            sudo /tmp/git-hooks-master/setup_hooks.sh install_hooks
+            wget https://github.com/mmphego/git-hooks/archive/master.zip -P ~/Documents && \
+            unzip ~/Documents/master.zip -d ~/Documents
+            [ -f ~/Documents/git-hooks-master/setup_hooks.sh ] && \
+            sudo ~/Documents/git-hooks-master/setup_hooks.sh install_hooks
         fi
         echo
     fi
