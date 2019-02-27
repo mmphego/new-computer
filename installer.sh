@@ -189,6 +189,9 @@ ReposInstaller() {
     echo "deb [trusted=yes] https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
     Recv_GPG_Keys 379CE192D401AB61
 
+    ## Redshift
+    sudo add-apt-repository -y ppa:dobey/redshift-daily
+
     sudo apt-get update -qq
     rm -rf -- *.gpg
     cecho "${cyan}" "################### Done Adding Repositories ###################"
@@ -646,7 +649,9 @@ main() {
         terminator \
         vim \
         xz-utils \
-        nodejs
+        nodejs \
+        redshift \
+        redshift-gtk
 
     GitInstaller
     TravisClientInstaller
