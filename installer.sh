@@ -7,7 +7,8 @@
 # https://github.com/JackHack96/dell-xps-9570-ubuntu-respin
 
 set -e pipefail
-
+#  increase the number of open files allowed
+ulimit -n 65535
 # Check if the script is running under Ubuntu 16.04 or Ubuntu 18.04
 if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ]; then
     >&2 echo "This script is made for Ubuntu 16.04 or Ubuntu 18.04!"
@@ -160,7 +161,6 @@ ReposInstaller() {
 
     # Dropbox
     [ -z "${Version}" ] || echo "deb [trusted=yes] http://linux.dropbox.com/ubuntu ${Version} main" | sudo tee /etc/apt/sources.list.d/dropbox.list
-    Recv_GPG_Keys 5044912E || true
 
     # Zotero stand-alone
     sudo add-apt-repository -y ppa:smathot/cogscinl
@@ -187,7 +187,6 @@ ReposInstaller() {
 
     ## etcher USB image writer
     echo "deb [trusted=yes] https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
-    Recv_GPG_Keys 379CE192D401AB61
 
     ## Redshift
     sudo add-apt-repository -y ppa:dobey/redshift-daily
@@ -412,6 +411,11 @@ ArduinoUDevFixes() {
     sudo usermod -a -G plugdev "${USER}"
 }
 
+RepoKeys(){
+    Recv_GPG_Keys 379CE192D401AB61 || true
+    Recv_GPG_Keys 5044912E || true
+}
+
 GitSetUp() {
 
     if [[ -z "${TRAVIS}" ]]; then
@@ -545,6 +549,7 @@ Cleanup() {
     echon
     cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
     echon
+
     sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
     if [[ -z "${TRAVIS}" ]]; then
         cechon "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)?: "
@@ -642,7 +647,7 @@ main() {
         lzip \
         openssh-server \
         ranger \
-        python-gpgme \
+        python-gpg \
         rar \
         rsync \
         sed  \
@@ -660,9 +665,9 @@ main() {
     # cat for `Markdown`
     MDcatInstaller
 
-    cecho "#{blue}" "#################################################################################################"
-    cecho "#{blue}" "################################# Additional Package Managers ###################################"
-    cecho "#{blue}" "#################################################################################################"
+    cecho "${blue}" "#################################################################################################"
+    cecho "${blue}" "################################# Additional Package Managers ###################################"
+    cecho "${blue}" "#################################################################################################"
 
     InstallThis cargo snap
 
@@ -736,6 +741,7 @@ main() {
     VSCodeSetUp;
     DockerSetUp
     GitSetUp
+    RepoKeys
 
     cecho "${cyan}" "#################### Installation Complete ################################"
 }
