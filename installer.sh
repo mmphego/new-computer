@@ -8,7 +8,7 @@
 
 set -e pipefail
 #  increase the number of open files allowed
-ulimit -n 65535
+ulimit -n 65535 || true
 # Check if the script is running under Ubuntu 16.04 or Ubuntu 18.04
 if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ]; then
     >&2 echo "This script is made for Ubuntu 16.04 or Ubuntu 18.04!"
@@ -258,6 +258,7 @@ xUbuntuPackages() {
         xfwm4-themes \
         xfwm4-theme-breeze \
         xfdashboard-plugins
+    sudo apt-get --purge autoremove -y light-locker
 }
 
 LatexInstaller() {
