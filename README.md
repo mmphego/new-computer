@@ -1,5 +1,5 @@
 
-# Simple Bash script for setting up a new Computer (running [X]Ubuntu)
+# Simple Bash script for setting up a new computer (running [X]Ubuntu)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/43713e0b78f547e8912ff05c9350cffb)](https://app.codacy.com/app/mmphego/xubuntu-pkg-installer?utm_source=github.com&utm_medium=referral&utm_content=mmphego/xubuntu-pkg-installer&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/mmphego/new-computer.svg?branch=master)](https://travis-ci.com/mmphego/new-computer)
 [![LICENCE](https://img.shields.io/github/license/mmphego/new-computer.svg?style=plastic)](https://github.com/mmphego/new-computer/blob/master/LICENSE)
