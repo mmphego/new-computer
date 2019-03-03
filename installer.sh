@@ -137,6 +137,7 @@ ReposInstaller() {
     cecho "${green}" "Running package updates..."
     sudo apt-get update -qq || true;
     sudo dpkg --configure -a || true;
+    sudo -k sed -i -r 's"enabled=1"enabled=0"' /etc/default/apport
     if ! command -v wget >/dev/null; then
         InstallThisQuietly wget
     fi
