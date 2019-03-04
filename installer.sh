@@ -599,7 +599,7 @@ main() {
 
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
-        tlp tlpui pydf balena-etcher-electron
+        tlp tlpui pydf balena-etcher-electron stow
 
     if [[ -z "${TRAVIS}" ]]; then
         # VM tools
