@@ -216,7 +216,7 @@ PythonInstaller() {
 
 RustPackages() {
     if command -v cargo > /dev/null; then
-        cargo install --no-default-features exa
+        cargo install --no-default-features "$1"
     fi
 }
 
@@ -678,7 +678,7 @@ main() {
     cecho "${blue}" "#################################################################################################"
 
     InstallThis cargo snap
-    RustPackages
+    RustPackages exa
 
     cecho "${blue}" "################################################################################################"
     cecho "${blue}" "####################### Packages for xUbuntu/ Elementary OS  ###################################"
