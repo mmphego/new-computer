@@ -214,6 +214,12 @@ PythonInstaller() {
     rm -rf pip-requirements.txt
 }
 
+RustPackages() {
+    if command -v cargo > /dev/null; then
+        cargo install --no-default-features "$1"
+    fi
+}
+
 SlackInstaller() {
     cecho "${cyan}" "Installing Slack..."
     VERSION=3.3.7
@@ -672,6 +678,7 @@ main() {
     cecho "${blue}" "#################################################################################################"
 
     InstallThis cargo snap
+    RustPackages exa
 
     cecho "${blue}" "################################################################################################"
     cecho "${blue}" "####################### Packages for xUbuntu/ Elementary OS  ###################################"
@@ -719,7 +726,8 @@ main() {
         youtube-dl \
         simplescreenrecorder \
         openshot-qt \
-        pinta
+        pinta \
+        audacious
 
     cecho "${blue}" "################################################################################################"
     cecho "${blue}" "############################ Academic tools ####################################################"
