@@ -406,6 +406,8 @@ VSCodeSetUp() {
     if [ ! -f "code_plugins.txt" ]; then
         wget https://raw.githubusercontent.com/mmphego/new-computer/master/code_plugins.txt
     fi
+    # alt
+    # cat code_plugins.txt | xargs -L1 code --install-extension
     while read -r pkg; do
         retry_cmd 5 code --install-extension "${pkg}" --force || true
     done < code_plugins.txt
