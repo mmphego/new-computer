@@ -192,6 +192,9 @@ ReposInstaller() {
     ## Redshift
     sudo add-apt-repository -y ppa:dobey/redshift-daily
 
+    ## Touchpad
+    sudo add-apt-repository -y ppa:atareao/atareao
+
     sudo apt-get update -qq
     rm -rf -- *.gpg
     cecho "${cyan}" "################### Done Adding Repositories ###################"
@@ -605,7 +608,8 @@ main() {
 
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
-        tlp tlpui pydf balena-etcher-electron stow autorandr
+        tlp tlpui pydf balena-etcher-electron stow \
+        autorandr touchpad-indicator
 
     if [[ -z "${TRAVIS}" ]]; then
         # VM tools
