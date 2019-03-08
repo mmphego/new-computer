@@ -205,7 +205,7 @@ PythonInstaller() {
     if [ ! -f "pip-requirements.txt" ]; then
         wget https://raw.githubusercontent.com/mmphego/new-computer/master/pip-requirements.txt
     fi
-    InstallThis python-dev python3.7-dev python3.7
+    InstallThis python-dev python3.7-dev python3.7 python-serial
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
     sudo pip install virtualenv
     virtualenv ~/.venv
@@ -271,7 +271,9 @@ xUbuntuPackages() {
 
 LatexInstaller() {
     InstallThis chktex \
+        texinfo \
         latexmk \
+        lynx \
         pandoc \
         texlive-bibtex-extra \
         texlive-extra-utils \
@@ -601,7 +603,8 @@ main() {
 
     InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
         libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
-        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0
+        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0 libtool libncurses5-dev \
+        libc6-dev-amd64 libexpat-dev
 
     cecho "#{blue}" "#################################################################################################"
     cecho "#{blue}" "################################# System and Security tools #####################################"
@@ -645,33 +648,36 @@ main() {
     cecho "${blue}" "################################################################################################"
 
     InstallThis axel \
+        bison \
         bzip2 \
         chromium-browser \
         colordiff \
         coreutils \
         docker-ce \
         file \
+        flex \
         gawk \
         gnupg2 \
+        gperf \
         grep \
         gzip \
         htop \
         jq \
         lzip \
+        nodejs \
         openssh-server \
-        ranger \
         python-gpg \
+        ranger \
         rar \
+        redshift \
+        redshift-gtk \
         rsync \
         sed  \
         shellcheck \
         sqlite3 \
         terminator \
         vim \
-        xz-utils \
-        nodejs \
-        redshift \
-        redshift-gtk
+        xz-utils
 
     GitInstaller
     TravisClientInstaller
