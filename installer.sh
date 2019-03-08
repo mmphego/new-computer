@@ -613,7 +613,8 @@ main() {
     InstallThis ca-certificates build-essential \
         software-properties-common apt-transport-https \
         tlp tlpui pydf balena-etcher-electron stow \
-        autorandr touchpad-indicator
+        autorandr touchpad-indicator \
+        openjdk-8-jre openjdk-8-jdk
 
     if [[ -z "${TRAVIS}" ]]; then
         # VM tools
