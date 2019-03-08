@@ -207,12 +207,17 @@ PythonInstaller() {
     fi
     InstallThis python-dev python3.7-dev python3.7 python-serial
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
-    sudo pip install virtualenv
-    virtualenv ~/.venv
+    sudo pip install virtualenv virtualenvwrapper
+    export WORKON_HOME="${HOME}/.venvs"
+    export VIRTUALENVWRAPPER_PYTHON="$(which python)"
+    export VIRTUALENVWRAPPER_VIRTUALENV="$(which virtualenv)"
+    export VIRTUALENVWRAPPER_VIRTUALENV_ARGS="--no-site-packages"
 
     # shellcheck source=/dev/null
-    source ~/.venv/bin/activate
-    pip install -U -r pip-requirements.txt
+    source "$(which virtualenvwrapper.sh)"
+    mkvirtualenv -p python2.7 venv2 -r pip-requirements.txt
+    mkvirtualenv -p python3.6 venv3.6 -r pip-requirements.txt
+    mkvirtualenv -p python3.7 venv3.7 -r pip-requirements.txt
     rm -rf pip-requirements.txt
 }
 
@@ -604,7 +609,7 @@ main() {
     InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
         libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
         libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0 libtool libncurses5-dev \
-        libc6-dev-amd64 libexpat-dev
+        libc6-dev-amd64 libexpat-dev libtool-bin
 
     cecho "#{blue}" "#################################################################################################"
     cecho "#{blue}" "################################# System and Security tools #####################################"
@@ -712,7 +717,8 @@ main() {
     cecho "${blue}" "############################ Dev Editors and tools ############################################"
     cecho "${blue}" "################################################################################################"
 
-    InstallThis atom \
+    InstallThis arduino \
+                atom \
                 code \
                 sublime-text
 
