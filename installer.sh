@@ -215,9 +215,9 @@ PythonInstaller() {
 
     # shellcheck source=/dev/null
     source "$(which virtualenvwrapper.sh)"
-    mkvirtualenv -p python2.7 venv2 -r pip-requirements.txt
-    mkvirtualenv -p python3.6 venv3.6 -r pip-requirements.txt
-    mkvirtualenv -p python3.7 venv3.7 -r pip-requirements.txt
+    mkvirtualenv -p python2.7 venv2 -r pip-requirements.txt || true
+    mkvirtualenv -p python3.6 venv3.6 -r pip-requirements.txt || true
+    mkvirtualenv -p python3.7 venv3.7 -r pip-requirements.txt || true
     rm -rf pip-requirements.txt
 }
 
