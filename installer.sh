@@ -10,7 +10,7 @@ set -e pipefail
 #  increase the number of open files allowed
 ulimit -n 65535 || true
 # Check if the script is running under Ubuntu 16.04 or Ubuntu 18.04
-if [ "$(lsb_release -c -s)" != "bionic" -a "$(lsb_release -c -s)" != "xenial" ]; then
+if [ "$(lsb_release -c -s)" != "bionic" ] && [ "$(lsb_release -c -s)" != "xenial" ]; then
     >&2 echo "This script is made for Ubuntu 16.04 or Ubuntu 18.04!"
     exit 1
 fi
@@ -577,6 +577,10 @@ Cleanup() {
             sudo apt-get -y --allow-unauthenticated upgrade && \
             sudo apt-get clean && sudo apt-get autoclean && \
             sudo apt-get autoremove
+        fi
+        if [ "$(lsb_release -c -s)" == "bionic" ] && [[ "$(uname -r)" > "4.15" ]]; then
+            cecho "${green}" "Upgrading Ubuntu 18.04 to Ubuntu 18.04.2 with new kernel version"
+            sudo apt-get install -y --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04
         fi
     fi
     cecho "${cyan}" "########################## Done Cleanup #####################################"
