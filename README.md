@@ -34,6 +34,11 @@ Here are some of the things that gets set up:
 The script is broken up extensively into functions for easier readability and trouble-shooting. Most everything should be self-explanatory.
 You can easily add new methods of installations as well.
 
+### Demo
+To see the demo, click on the gif below
+
+[![demo](https://i.makeagif.com/media/3-17-2019/C1f0UT.gif)](https://www.youtube.com/watch?v=ooqxvkyNwiY&t=45s)
+
 ### Contributing workflow
 
 Here’s how we suggest you go about proposing a change to this project:
