@@ -223,7 +223,7 @@ PythonInstaller() {
 
 RustPackages() {
     if command -v cargo > /dev/null; then
-        cargo install --no-default-features "$1"
+        retry_cmd 5 cargo install --no-default-features "$1" || true
     fi
 }
 
