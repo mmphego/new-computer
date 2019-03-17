@@ -27,7 +27,7 @@ Here are some of the things that gets set up:
 - Installs [a collection of scripts and tweaks to make [X]Ubuntu 18.04 run smooth on Dell XPS 15 9570 ](https://github.com/JackHack96/dell-xps-9570-ubuntu-respin), if you are running a [Dell XPS 15](https://www.dell.com/en-us/shop/dell-laptops/xps-15/spd/xps-15-9570-laptop)
   - [Credit:@JackHack96](https://github.com/JackHack96)
 - Installs [my dotfiles](https://github.com/mmphego/dot-files) and [my githooks](https://github.com/mmphego/git-hooks)
-- [Optional] Installs additional desktop environment: [elementaryOS](https://elementary.io/) and [Ubuntu](http://ubuntu.com/) 
+- [Optional] Installs additional desktop environment: [elementaryOS](https://elementary.io/) and [Ubuntu](http://ubuntu.com/)
 
 ### The script itself
 
@@ -37,7 +37,7 @@ You can easily add new methods of installations as well.
 ### Demo
 To see the demo, click on the gif below
 
-[![Demo](.demo.gif)](https://www.youtube.com/watch?v=ooqxvkyNwiY)
+[![demo](https://i.makeagif.com/media/3-17-2019/C1f0UT.gif)](https://www.youtube.com/watch?v=ooqxvkyNwiY)
 
 ### Contributing workflow
 
