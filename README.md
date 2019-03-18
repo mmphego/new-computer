@@ -37,7 +37,7 @@ You can easily add new methods of installations as well.
 ### Demo
 To see the demo, click on the gif below
 
-[![demo](https://i.makeagif.com/media/3-17-2019/C1f0UT.gif)](https://www.youtube.com/watch?v=ooqxvkyNwiY)
+[![demo](.demo.gif)](https://www.youtube.com/watch?v=ooqxvkyNwiY)
 
 ### Contributing workflow
 
