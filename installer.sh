@@ -194,6 +194,8 @@ ReposInstaller() {
     ## Touchpad
     sudo add-apt-repository -y ppa:atareao/atareao
 
+    ## Inxi
+    sudo add-apt-repository -y ppa:unit193/inxi
     sudo apt-get update -qq
     rm -rf -- *.gpg
     cecho "${cyan}" "################### Done Adding Repositories ###################"
@@ -207,7 +209,10 @@ PythonInstaller() {
     fi
     InstallThis python-dev python3.7-dev python3.7 python-serial
     curl https://bootstrap.pypa.io/get-pip.py | sudo python
-    sudo pip install virtualenv virtualenvwrapper
+    sudo pip install virtualenv virtualenvwrapper ipython
+    if ! command -v ipython >/dev/null; then
+        ipython profile create
+    fi
     export WORKON_HOME="${HOME}/.venvs"
     export VIRTUALENVWRAPPER_PYTHON="$(which python)"
     export VIRTUALENVWRAPPER_VIRTUALENV="$(which virtualenv)"
@@ -672,6 +677,7 @@ main() {
         grep \
         gzip \
         htop \
+        inxi \
         jq \
         lzip \
         nodejs \
