@@ -13,22 +13,20 @@ function install_git_hooks {
 
 function install_dot_files {
     cd ~/ || exit 1
-    wget -O .dircolors https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.dircolors
-    wget -O .bashrchttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bashrc
-    wget -O .bash_functionshttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bash_functions
-    wget -O .bash_aliaseshttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bash_aliases
-    wget -O .gitconfighttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.gitconfig
-    wget -O .bashhttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.git-completion.bash
-    wget -O .profilehttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.profile
+    FILES=(.dircolors .bashrc .bash_functions .bash_aliases .gitconfig .bash .profile)
+    for file in "${FILES[@]}"; do
+        wget --quiet -O "${file}" "https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/${file}" &
+    done
 }
 
 function install_gpg_stuffs {
     read -r -p 'Enter your FULL name: ' FULLNAME
+    git config --global --add user.name FULLNAME
     read -r -p 'Enter your GitHub username: ' GHUSERNAME
     read -r -p 'Enter your GitHub email: ' GHUSEREMAIL
-    read -r -s -p 'Enter your GitHub password: ' GHPASSWORD
-    git config --global --add user.name FULLNAME
     git config --global --add user.email GHUSEREMAIL
+    read -r -s -p 'Enter your GitHub password: ' GHPASSWORD
+
     echo "Generating GPG keys, please follow the prompts."
     if [ ! -f "github_gpg.py" ]; then
         wget https://raw.githubusercontent.com/mmphego/new-computer/master/github_gpg.py
@@ -62,6 +60,7 @@ function install_gpg_stuffs {
 function update_packages {
     sudo add-apt-repository -y ppa:git-core/ppa
     sudo apt-get update
+    sudo apt-get --purge autoremove -y git
     sudo apt-get install -y build-essential \
                             colordiff \
                             curl \
@@ -79,7 +78,6 @@ function update_packages {
         sudo prefix=/usr/local "${DIR}"/install
         rm -rf -- hub-linux* || true
     done
-
 }
 
 update_packages
