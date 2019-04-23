@@ -22,6 +22,43 @@ function install_dot_files {
     wget -O .profilehttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.profile
 }
 
+function install_gpg_stuffs {
+    read -r -p 'Enter your FULL name: ' FULLNAME
+    read -r -p 'Enter your GitHub username: ' GHUSERNAME
+    read -r -p 'Enter your GitHub email: ' GHUSEREMAIL
+    read -r -s -p 'Enter your GitHub password: ' GHPASSWORD
+    git config --global --add user.name FULLNAME
+    git config --global --add user.email GHUSEREMAIL
+    echo "Generating GPG keys, please follow the prompts."
+    if [ ! -f "github_gpg.py" ]; then
+        wget https://raw.githubusercontent.com/mmphego/new-computer/master/github_gpg.py
+    fi
+
+    if gpg2 --full-generate-key; then
+        MY_GPG_KEY=$(gpg2 --list-secret-keys --keyid-format LONG | grep ^sec | tail -1 | cut -f 2 -d "/" | cut -f 1 -d " ")
+        gpg2 --armor --export "${MY_GPG_KEY}" > gpg_keys.txt
+        echo "Successfully generated GPG keys!"
+        if python github_gpg.py -u "${GHUSERNAME}" -p "${GHPASSWORD}" -f ./gpg_keys.txt; then
+            echo
+            git config --global commit.gpgsign true
+            git config --global user.signingkey "${MY_GPG_KEY}"
+            echo "export GPG_TTY=$(tty)" >> ~/.bashrc
+            echo
+            echo "####################################################"
+            echo "GitHub PGP-Keys added successfully!"
+            echo "####################################################"
+        else
+            echo "Something went wrong."
+            echo "You will need to do it manually."
+            echo "Open: https://github.com/settings/keys"
+            echo
+        fi
+    else
+        echo "gpg2 is not installed"
+    fi
+    rm -rf gpg_keys.txt github_gpg.py || true;
+}
+
 function update_packages {
     sudo add-apt-repository -y ppa:git-core/ppa
     sudo apt-get update
@@ -48,3 +85,4 @@ function update_packages {
 update_packages
 install_dot_files
 install_git_hooks
+install_gpg_stuffs
