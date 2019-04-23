@@ -8,19 +8,19 @@ function clone_this {
 
 function install_git_hooks {
     clone_this git-hooks
-    sudo "${DIR}/.git-hooks/setup_hooks.sh" install_hooks
+    sudo "${DIR}/git-hooks/setup_hooks.sh" install_hooks
 }
 
 function install_dot_files {
     cd ~/ || exit 1
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.dircolors
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bashrc
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bash_functions
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bash_aliases
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.gitconfig
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.git-completion.bash
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.nanorc
-    wget https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.profile
+    wget -O .dircolors https://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.dircolors
+    wget -O .bashrchttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bashrc
+    wget -O .bash_functionshttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bash_functions
+    wget -O .bash_aliaseshttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.bash_aliases
+    wget -O .gitconfighttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.gitconfig
+    wget -O .bashhttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.git-completion.bash
+    wget -O .nanorchttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.nanorc
+    wget -O .profilehttps://raw.githubusercontent.com/mmphego/dot-files/master/.dotfiles/.profile
 }
 
 
