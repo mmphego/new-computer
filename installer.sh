@@ -569,6 +569,10 @@ installDotfiles() {
     fi
 }
 
+MiscConfigs() {
+    # add your user to the dialout group so it can access the tty device for the serial connection
+    sudo adduser $USER dialout
+}
 Cleanup() {
     echon
     cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
@@ -790,6 +794,7 @@ main() {
 ReposInstaller
 main
 installDotfiles
+MiscConfigs
 if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
     DELL_XPS_TWEAKS
 fi
