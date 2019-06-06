@@ -245,6 +245,15 @@ MEGAInstaller() {
     sudo gdebi -n "megasync-xUbuntu_${ID}_amd64.deb"
 }
 
+EntrInstaller() {
+    wget http://eradman.com/entrproject/code/entr-4.2.tar.gz
+    tar -xvzf entr-4.2.tar.gz
+    cd eradman-entr-6cd0927b54a6/
+    ./configure && sudo make install
+    rm -rf entr-4.2.tar.gz eradman-entr-6cd0927b54a6
+    cd -
+}
+
 DropboxInstaller() {
     Version=$(curl -s https://linux.dropboxstatic.com/packages/ubuntu/ | $(command -v grep) -P '^(?=.*drop*)(?=.*amd64)' |  $(command -v grep) -oP '(?<=>).*(?=<)' | tail -1)
     wget "https://linux.dropboxstatic.com/packages/ubuntu/${Version}"
@@ -703,6 +712,8 @@ main() {
     TravisClientInstaller
     # cat for `Markdown`
     MDcatInstaller
+    # See http://eradman.com/entrproject/
+    EntrInstaller
 
     cecho "${blue}" "#################################################################################################"
     cecho "${blue}" "################################# Additional Package Managers ###################################"
