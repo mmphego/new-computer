@@ -681,6 +681,9 @@ main() {
         chromium-browser \
         colordiff \
         coreutils \
+        dict \
+        dictd \
+        dict-wn \
         docker-ce \
         file \
         flex \
