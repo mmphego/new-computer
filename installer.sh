@@ -153,7 +153,7 @@ ReposInstaller() {
     Version=$(lsb_release -cs)
 
     ## Git
-    sudo add-apt-repository -y ppa:git-core/ppa || true
+    sudo add-apt-repository -yn ppa:git-core/ppa || true
 
     ## Sublime Text
     wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - || true
@@ -163,11 +163,11 @@ ReposInstaller() {
     [ -z "${Version}" ] || echo "deb [trusted=yes] http://linux.dropbox.com/ubuntu ${Version} main" | sudo tee /etc/apt/sources.list.d/dropbox.list
 
     # Zotero stand-alone
-    sudo add-apt-repository -y ppa:smathot/cogscinl
+    sudo add-apt-repository -yn ppa:smathot/cogscinl
 
     ## Docker
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - || true
-    [ -z "${Version}" ] || sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
+    [ -z "${Version}" ] || sudo add-apt-repository -yn "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
 
     ## VSCode
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg || true;
@@ -175,27 +175,27 @@ ReposInstaller() {
     sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list' || true;
 
     ## Atom
-    sudo add-apt-repository -y ppa:webupd8team/atom || true
+    sudo add-apt-repository -yn ppa:webupd8team/atom || true
 
     ## Video tools
-    sudo add-apt-repository -y ppa:maarten-baert/simplescreenrecorder || true
-    sudo add-apt-repository -y ppa:openshot.developers/ppa || true
+    sudo add-apt-repository -yn ppa:maarten-baert/simplescreenrecorder || true
+    sudo add-apt-repository -yn ppa:openshot.developers/ppa || true
 
     ## Laptop battery management
-    sudo add-apt-repository -y ppa:linuxuprising/apps || true
-    sudo add-apt-repository -y ppa:linrunner/tlp || true
+    sudo add-apt-repository -yn ppa:linuxuprising/apps || true
+    sudo add-apt-repository -yn ppa:linrunner/tlp || true
 
     ## etcher USB image writer
     echo "deb [trusted=yes] https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
 
     ## Redshift
-    sudo add-apt-repository -y ppa:dobey/redshift-daily
+    sudo add-apt-repository -yn ppa:dobey/redshift-daily
 
     ## Touchpad
-    sudo add-apt-repository -y ppa:atareao/atareao
+    sudo add-apt-repository -yn ppa:atareao/atareao
 
     ## Inxi
-    sudo add-apt-repository -y ppa:unit193/inxi
+    sudo add-apt-repository -yn ppa:unit193/inxi
     sudo apt-get update -qq
     rm -rf -- *.gpg
     cecho "${cyan}" "################### Done Adding Repositories ###################"
